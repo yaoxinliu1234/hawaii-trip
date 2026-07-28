@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aloha Hawaii · 大岛 & 欧胡岛</title>
+  <meta name="description" content="从纽约和湾区出发的夏威夷双岛旅行指南：欧胡岛与大岛路线、景点与攻略。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topnav">
+    <a class="brand" href="#top">Aloha</a>
+    <nav>
+      <a href="#islands">岛屿</a>
+      <a href="#route">路线</a>
+      <a href="#spots">景点</a>
+      <a href="#tips">攻略</a>
+    </nav>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="hero-media" aria-hidden="true">
+        <img src="images/waikiki.jpg" alt="" />
+      </div>
+      <div class="hero-content">
+        <p class="brand-mark">Aloha Hawaii</p>
+        <h1>大岛 & 欧胡岛</h1>
+        <p class="lede">纽约 · 湾区出发的双岛手账路线。点击景点卡片，看动漫风风景和实用贴士。</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#route">看路线图</a>
+          <a class="btn btn-ghost" href="#islands">选岛屿</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="islands" class="section">
+      <div class="section-head">
+        <h2>选择目的地</h2>
+        <p>两座岛，两种节奏：都市冲浪 vs 火山野性。</p>
+      </div>
+      <div class="island-grid" id="islandCards"></div>
+    </section>
+
+    <section id="route" class="section route-section">
+      <div class="section-head">
+        <h2>手账路线图</h2>
+        <p>像一条路一样串联每天的景点，点照片进详情。</p>
+      </div>
+
+      <div class="island-switch" id="islandSwitch"></div>
+      <div class="day-switch" id="daySwitch"></div>
+      <div class="route-board" id="routeBoard"></div>
+    </section>
+
+    <section id="spots" class="section">
+      <div class="section-head">
+        <h2>全部景点</h2>
+        <p id="spotsSubtitle">点击任意卡片查看详情</p>
+      </div>
+      <div class="spots-grid" id="spotsGrid"></div>
+    </section>
+
+    <section id="tips" class="section tips-section">
+      <div class="section-head">
+        <h2>旅行攻略</h2>
+        <p>从纽约 / 湾区起飞前先看这些。</p>
+      </div>
+      <div class="tips-grid" id="tipsGrid"></div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>🌺 Mahalo · 从纽约 & 湾区出发的夏威夷双岛指南</p>
+  </footer>
+
+  <dialog id="detailModal" class="modal">
+    <article class="modal-card">
+      <button class="modal-close" id="modalClose" aria-label="关闭">×</button>
+      <div id="modalBody"></div>
+    </article>
+  </dialog>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
