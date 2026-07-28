@@ -15,11 +15,25 @@ const modalClose = document.getElementById("modalClose");
 
 /* ---------- Intro: get ready with Yaoxin ---------- */
 const INTRO_TEXT = "get ready with Yaoxin...";
+const INTRO_NAME_START = "get ready with ".length;
+const INTRO_NAME_END = INTRO_NAME_START + "Yaoxin".length;
 const intro = document.getElementById("intro");
 const site = document.getElementById("site");
 const introTyped = document.getElementById("introTyped");
 const introSkip = document.getElementById("introSkip");
 let introFinished = false;
+
+function renderIntroText(count) {
+  const shown = INTRO_TEXT.slice(0, count);
+  if (count <= INTRO_NAME_START) {
+    introTyped.textContent = shown;
+    return;
+  }
+  const before = INTRO_TEXT.slice(0, INTRO_NAME_START);
+  const name = INTRO_TEXT.slice(INTRO_NAME_START, Math.min(count, INTRO_NAME_END));
+  const after = count > INTRO_NAME_END ? INTRO_TEXT.slice(INTRO_NAME_END, count) : "";
+  introTyped.innerHTML = `${before}<span class="name">${name}</span>${after}`;
+}
 
 function finishIntro() {
   if (introFinished) return;
@@ -36,8 +50,8 @@ function finishIntro() {
 function runIntro() {
   let i = 0;
   const typeTimer = window.setInterval(() => {
-    introTyped.textContent = INTRO_TEXT.slice(0, i + 1);
     i += 1;
+    renderIntroText(i);
     if (i >= INTRO_TEXT.length) {
       window.clearInterval(typeTimer);
       window.setTimeout(finishIntro, 1600);
@@ -46,7 +60,7 @@ function runIntro() {
 
   introSkip.addEventListener("click", () => {
     window.clearInterval(typeTimer);
-    introTyped.textContent = INTRO_TEXT;
+    renderIntroText(INTRO_TEXT.length);
     finishIntro();
   });
 
