@@ -13,6 +13,49 @@ const modal = document.getElementById("detailModal");
 const modalBody = document.getElementById("modalBody");
 const modalClose = document.getElementById("modalClose");
 
+/* ---------- Intro: get ready with Yaoxin ---------- */
+const INTRO_TEXT = "get ready with Yaoxin...";
+const intro = document.getElementById("intro");
+const site = document.getElementById("site");
+const introTyped = document.getElementById("introTyped");
+const introSkip = document.getElementById("introSkip");
+let introFinished = false;
+
+function finishIntro() {
+  if (introFinished) return;
+  introFinished = true;
+  intro.classList.add("is-done");
+  intro.setAttribute("aria-hidden", "true");
+  site.classList.remove("is-hidden");
+  document.body.classList.remove("intro-lock");
+  window.setTimeout(() => {
+    if (intro.parentNode) intro.remove();
+  }, 1000);
+}
+
+function runIntro() {
+  let i = 0;
+  const typeTimer = window.setInterval(() => {
+    introTyped.textContent = INTRO_TEXT.slice(0, i + 1);
+    i += 1;
+    if (i >= INTRO_TEXT.length) {
+      window.clearInterval(typeTimer);
+      window.setTimeout(finishIntro, 1600);
+    }
+  }, 70);
+
+  introSkip.addEventListener("click", () => {
+    window.clearInterval(typeTimer);
+    introTyped.textContent = INTRO_TEXT;
+    finishIntro();
+  });
+
+  // Safety: always enter site even if animations stall
+  window.setTimeout(finishIntro, 6500);
+}
+
+runIntro();
+
 function attractionMap(islandId) {
   const map = {};
   data.islands[islandId].attractions.forEach((a) => {

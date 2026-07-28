@@ -10,7 +10,45 @@
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
-<body>
+<body class="intro-lock">
+  <!-- Intro splash -->
+  <div id="intro" class="intro" aria-hidden="false">
+    <div class="intro-sky">
+      <div class="stars" aria-hidden="true"></div>
+      <div class="moon" aria-hidden="true"></div>
+      <div class="clouds" aria-hidden="true"></div>
+    </div>
+
+    <div class="broom-flight" aria-hidden="true">
+      <div class="broom-rider">
+        <div class="sparkles">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <div class="rider">
+          <div class="rider-head"></div>
+          <div class="rider-body"></div>
+          <div class="rider-cape"></div>
+        </div>
+        <div class="broom">
+          <div class="broom-stick"></div>
+          <div class="broom-bristles"></div>
+        </div>
+        <div class="trail"></div>
+      </div>
+    </div>
+
+    <div class="intro-copy">
+      <p class="intro-eyebrow">Aloha · Hawaii Trip</p>
+      <h1 class="intro-title">
+        <span class="typed" id="introTyped"></span><span class="cursor">|</span>
+      </h1>
+      <p class="intro-sub">纽约 · 湾区 → 大岛 & 欧胡岛</p>
+    </div>
+
+    <button class="intro-skip" id="introSkip" type="button">跳过 ›</button>
+  </div>
+
+  <div id="site" class="site is-hidden">
   <header class="topnav">
     <a class="brand" href="#top">Aloha</a>
     <nav>
@@ -83,6 +121,8 @@
       <div id="modalBody"></div>
     </article>
   </dialog>
+
+  </div><!-- /#site -->
 
   <script src="data.js"></script>
   <script src="app.js"></script>

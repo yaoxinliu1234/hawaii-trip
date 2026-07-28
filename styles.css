@@ -26,6 +26,311 @@ body {
     var(--paper);
   line-height: 1.55;
 }
+body.intro-lock {
+  overflow: hidden;
+  height: 100vh;
+}
+
+.site.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+.site {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.8s ease;
+}
+
+/* ========== Intro splash ========== */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 20%, #1a2a4a 0%, #070b16 55%, #02040a 100%);
+  transition: opacity 0.9s ease, visibility 0.9s ease;
+}
+.intro.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.intro-sky {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.stars {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1.5px 1.5px at 12% 18%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 28% 42%, #fff, transparent),
+    radial-gradient(1px 1px at 45% 12%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 62% 28%, #fff, transparent),
+    radial-gradient(1px 1px at 78% 16%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 88% 48%, #fff, transparent),
+    radial-gradient(1px 1px at 18% 68%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 38% 78%, #fff, transparent),
+    radial-gradient(1px 1px at 55% 62%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 72% 82%, #fff, transparent),
+    radial-gradient(1px 1px at 92% 72%, #fff, transparent),
+    radial-gradient(1px 1px at 8% 88%, #fff, transparent);
+  animation: twinkle 3s ease-in-out infinite alternate;
+  opacity: 0.85;
+}
+.moon {
+  position: absolute;
+  top: 12%;
+  right: 14%;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff8e7, #e8d4a8 55%, #c9b07a);
+  box-shadow: 0 0 40px rgba(255, 240, 200, 0.35);
+}
+.clouds {
+  position: absolute;
+  inset: auto 0 0;
+  height: 28%;
+  background:
+    radial-gradient(ellipse 180px 50px at 20% 70%, rgba(40, 55, 80, 0.7), transparent),
+    radial-gradient(ellipse 220px 60px at 55% 80%, rgba(30, 45, 70, 0.65), transparent),
+    radial-gradient(ellipse 160px 45px at 85% 65%, rgba(40, 55, 80, 0.55), transparent);
+}
+
+.broom-flight {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.broom-rider {
+  position: absolute;
+  top: 38%;
+  left: -20%;
+  width: 160px;
+  height: 80px;
+  animation: broomFly 4.8s cubic-bezier(0.4, 0.05, 0.3, 1) 0.4s both;
+}
+.broom {
+  position: absolute;
+  left: 20px;
+  top: 42px;
+  width: 130px;
+  height: 18px;
+  transform: rotate(-8deg);
+}
+.broom-stick {
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 95px;
+  height: 5px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, #5a3418, #8b5a2b 40%, #6b3f1a);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+.broom-bristles {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 42px;
+  height: 18px;
+  border-radius: 2px 12px 12px 2px;
+  background:
+    linear-gradient(90deg, #7a4a1e, #c48a3a 30%, #e0b060 70%, #9a6a30);
+  box-shadow:
+    inset -8px 0 8px rgba(0,0,0,0.15),
+    0 0 0 1px rgba(90, 50, 20, 0.35);
+  clip-path: polygon(0 20%, 100% 0, 100% 100%, 0 80%);
+}
+.rider {
+  position: absolute;
+  left: 48px;
+  top: 8px;
+  width: 40px;
+  height: 44px;
+  z-index: 2;
+}
+.rider-head {
+  width: 16px;
+  height: 16px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: #f0d5b8;
+  box-shadow: 0 -2px 0 3px #1a1520;
+  position: relative;
+}
+.rider-head::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  left: -2px;
+  width: 20px;
+  height: 10px;
+  background: #1a1520;
+  border-radius: 10px 10px 2px 2px;
+}
+.rider-body {
+  width: 22px;
+  height: 24px;
+  margin: -2px auto 0;
+  background: #1e2a4a;
+  border-radius: 8px 8px 4px 4px;
+  position: relative;
+}
+.rider-body::before,
+.rider-body::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  width: 8px;
+  height: 14px;
+  background: #1e2a4a;
+  border-radius: 4px;
+}
+.rider-body::before { left: -6px; transform: rotate(25deg); }
+.rider-body::after { right: -6px; transform: rotate(-35deg); }
+.rider-cape {
+  position: absolute;
+  left: 8px;
+  top: 18px;
+  width: 24px;
+  height: 28px;
+  background: linear-gradient(180deg, #6b1020, #3a0810);
+  border-radius: 4px 4px 12px 12px;
+  transform: skewX(-12deg);
+  opacity: 0.9;
+  animation: capeWave 0.45s ease-in-out infinite alternate;
+  z-index: -1;
+}
+.trail {
+  position: absolute;
+  left: -40px;
+  top: 48px;
+  width: 70px;
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(180, 220, 255, 0.7));
+  filter: blur(1px);
+  animation: trailPulse 0.35s ease-in-out infinite alternate;
+}
+.sparkles span {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ffe9a8;
+  box-shadow: 0 0 8px #ffd76a;
+  animation: spark 0.9s linear infinite;
+}
+.sparkles span:nth-child(1) { left: 10px; top: 40px; animation-delay: 0s; }
+.sparkles span:nth-child(2) { left: 0; top: 55px; animation-delay: 0.2s; }
+.sparkles span:nth-child(3) { left: 18px; top: 60px; animation-delay: 0.35s; }
+.sparkles span:nth-child(4) { left: -8px; top: 48px; animation-delay: 0.5s; }
+
+.intro-copy {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  color: #f4f7ff;
+  padding: 0 24px;
+  margin-top: 18vh;
+  animation: copyIn 0.8s ease both;
+}
+.intro-eyebrow {
+  margin: 0 0 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  color: rgba(220, 230, 255, 0.65);
+}
+.intro-title {
+  margin: 0;
+  font-family: var(--display);
+  font-size: clamp(1.8rem, 5.5vw, 3.2rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  min-height: 1.2em;
+}
+.intro-title .cursor {
+  display: inline-block;
+  margin-left: 2px;
+  color: #9ad4ff;
+  animation: blink 0.8s step-end infinite;
+}
+.intro-sub {
+  margin: 14px 0 0;
+  color: rgba(200, 215, 240, 0.7);
+  font-size: 1rem;
+  opacity: 0;
+  animation: fadeUp 0.6s ease 2.4s both;
+}
+
+.intro-skip {
+  position: absolute;
+  right: 22px;
+  bottom: 22px;
+  z-index: 3;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.8);
+  border-radius: 999px;
+  padding: 10px 16px;
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+.intro-skip:hover {
+  background: rgba(255,255,255,0.16);
+}
+
+@keyframes broomFly {
+  0%   { transform: translate(-10vw, 18vh) rotate(6deg); opacity: 0; }
+  8%   { opacity: 1; }
+  35%  { transform: translate(28vw, -4vh) rotate(-4deg); }
+  55%  { transform: translate(52vw, 8vh) rotate(3deg); }
+  75%  { transform: translate(78vw, -10vh) rotate(-6deg); }
+  100% { transform: translate(120vw, -2vh) rotate(-2deg); opacity: 1; }
+}
+@keyframes capeWave {
+  from { transform: skewX(-8deg) scaleY(1); }
+  to { transform: skewX(-18deg) scaleY(1.05); }
+}
+@keyframes trailPulse {
+  from { opacity: 0.4; width: 50px; }
+  to { opacity: 0.9; width: 80px; }
+}
+@keyframes spark {
+  0% { transform: translate(0,0) scale(1); opacity: 1; }
+  100% { transform: translate(-28px, 10px) scale(0); opacity: 0; }
+}
+@keyframes twinkle {
+  from { opacity: 0.55; }
+  to { opacity: 1; }
+}
+@keyframes blink {
+  50% { opacity: 0; }
+}
+@keyframes copyIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 600px) {
+  .broom-rider { transform-origin: center; scale: 0.85; }
+  .moon { width: 48px; height: 48px; top: 10%; right: 8%; }
+}
 
 a { color: inherit; text-decoration: none; }
 img { max-width: 100%; display: block; }
