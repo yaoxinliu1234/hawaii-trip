@@ -1217,3 +1217,56 @@ img { max-width: 100%; display: block; }
   font-style: normal;
   white-space: pre-wrap;
 }
+
+.sync-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #fff8e8;
+  border: 1px solid rgba(193, 68, 14, 0.2);
+}
+.sync-copy strong {
+  display: block;
+  margin-bottom: 4px;
+}
+.sync-copy span {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.sync-copy span[data-tone="ok"] { color: #0b6e8a; }
+.sync-copy span[data-tone="warn"] { color: #c1440e; }
+.sync-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.setup-card { max-width: 640px; width: calc(100% - 32px); }
+.setup-body {
+  padding: 28px 24px 32px;
+}
+.setup-body h2 {
+  margin: 0 0 10px;
+  font-family: var(--display);
+}
+.setup-body h3 {
+  margin: 18px 0 8px;
+}
+.setup-body ol {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--muted);
+}
+.setup-body li { margin-bottom: 6px; }
+.setup-note {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 12px;
+  background: #e8f5fa;
+  color: var(--ocean-deep);
+  font-size: 0.92rem;
+}

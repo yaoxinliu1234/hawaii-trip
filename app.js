@@ -4,6 +4,7 @@ let activeDay = 0;
 let editMode = false;
 
 const STORAGE_KEY = "hawaii-trip-v7-flight-legs";
+window.HAWAII_STORAGE_KEY = STORAGE_KEY;
 const defaultItineraries = JSON.parse(JSON.stringify(data.itineraries));
 
 function normalizeFlightLeg(leg = {}, index = 0) {
@@ -208,6 +209,9 @@ function persist() {
     })
   );
   updateUndoButton();
+  if (window.TripCloud && !window.TripCloud.isApplyingRemote()) {
+    window.TripCloud.queueSave();
+  }
 }
 
 function pushUndo() {
@@ -1178,6 +1182,52 @@ function renderAll() {
   renderSpots();
 }
 
+window.refreshTripUI = function refreshTripUI() {
+  data.itineraries = normalizeItineraries(data.itineraries);
+  data.tripFlights = normalizeTripFlights(data.tripFlights);
+  if (activeDay >= currentItinerary().days.length) {
+    activeDay = Math.max(0, currentItinerary().days.length - 1);
+  }
+  renderAll();
+};
+
+function exportTrip() {
+  const payload = {
+    exportedAt: new Date().toISOString(),
+    tripDates: data.tripDates,
+    itineraries: data.itineraries,
+    tripFlights: data.tripFlights
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `hawaii-trip-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function importTripFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const payload = JSON.parse(reader.result);
+      if (!payload.itineraries) throw new Error("missing itineraries");
+      pushUndo();
+      data.itineraries = normalizeItineraries(payload.itineraries);
+      data.tripFlights = normalizeTripFlights(payload.tripFlights || { legs: [] });
+      activeDay = 0;
+      persist();
+      renderAll();
+      alert("导入成功！如果已配置云端，也会同步上去。");
+    } catch (err) {
+      console.error(err);
+      alert("导入失败，请确认是本站导出的 JSON 文件。");
+    }
+  };
+  reader.readAsText(file);
+}
+
 editToggle.addEventListener("click", () => {
   editMode = !editMode;
   updateEditControls();
@@ -1228,6 +1278,24 @@ resetItinerary.addEventListener("click", () => {
   renderRouteBoard();
 });
 
+document.getElementById("exportTripBtn")?.addEventListener("click", exportTrip);
+document.getElementById("importTripFile")?.addEventListener("change", (e) => {
+  const file = e.target.files?.[0];
+  if (file) importTripFile(file);
+  e.target.value = "";
+});
+
+const cloudSetupModal = document.getElementById("cloudSetupModal");
+document.getElementById("cloudSetupBtn")?.addEventListener("click", () => {
+  const idEl = document.getElementById("setupTripId");
+  if (idEl) idEl.textContent = window.TRIP_CLOUD_ID || "yaoxin-hawaii-2026";
+  cloudSetupModal?.showModal();
+});
+document.getElementById("cloudSetupClose")?.addEventListener("click", () => cloudSetupModal?.close());
+cloudSetupModal?.addEventListener("click", (e) => {
+  if (e.target === cloudSetupModal) cloudSetupModal.close();
+});
+
 modalClose.addEventListener("click", () => modal.close());
 modal.addEventListener("click", (e) => {
   if (e.target === modal) modal.close();
@@ -1237,3 +1305,4 @@ loadSavedItineraries();
 renderIslandCards();
 renderTips();
 renderAll();
+window.TripCloud?.init();
