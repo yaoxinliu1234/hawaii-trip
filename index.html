@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Outfit:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=3" />
 </head>
 <body class="intro-lock">
   <!-- Intro splash -->
@@ -54,6 +54,7 @@
     <nav>
       <a href="#islands">岛屿</a>
       <a href="#route">路线</a>
+      <a href="#route" id="navEdit">编辑</a>
       <a href="#spots">景点</a>
       <a href="#tips">攻略</a>
     </nav>
@@ -70,6 +71,7 @@
         <p class="lede">纽约 · 湾区出发的双岛手账路线。点击景点卡片，看动漫风风景和实用贴士。</p>
         <div class="hero-cta">
           <a class="btn btn-primary" href="#route">看路线图</a>
+          <button class="btn btn-primary" type="button" id="heroEditBtn">✏️ 编辑行程</button>
           <a class="btn btn-ghost" href="#islands">选岛屿</a>
         </div>
       </div>
@@ -84,6 +86,14 @@
     </section>
 
     <section id="route" class="section route-section">
+      <div class="edit-banner" id="editBanner">
+        <div>
+          <strong>想改行程？</strong>
+          <span>点右边按钮，就能改时间、Notes，还能上传自己的图。</span>
+        </div>
+        <button class="btn btn-primary" type="button" id="editToggle">✏️ 编辑行程</button>
+      </div>
+
       <div class="section-head route-head">
         <div>
           <h2>手账路线图</h2>
@@ -91,7 +101,6 @@
         </div>
         <div class="route-actions">
           <button class="btn btn-ghost" type="button" id="undoBtn" disabled>Undo</button>
-          <button class="btn btn-ghost" type="button" id="editToggle">编辑行程</button>
           <button class="btn btn-ghost is-hidden" type="button" id="resetItinerary">恢复默认</button>
         </div>
       </div>
@@ -131,7 +140,7 @@
 
   </div><!-- /#site -->
 
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+  <script src="data.js?v=3"></script>
+  <script src="app.js?v=3"></script>
 </body>
 </html>

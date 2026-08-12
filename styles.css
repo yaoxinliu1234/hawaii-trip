@@ -913,6 +913,37 @@ img { max-width: 100%; display: block; }
 }
 
 /* Editable itinerary */
+.edit-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #0b6e8a, #1395b8);
+  color: #fff;
+  box-shadow: 0 12px 28px rgba(11, 110, 138, 0.28);
+}
+.edit-banner strong {
+  display: block;
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+}
+.edit-banner span {
+  opacity: 0.92;
+  font-size: 0.92rem;
+}
+.edit-banner .btn-primary {
+  background: #fff;
+  color: var(--ocean-deep);
+  box-shadow: none;
+  white-space: nowrap;
+}
+.edit-banner.is-editing {
+  background: linear-gradient(135deg, #c1440e, #e07a3a);
+}
 .route-head {
   display: flex;
   justify-content: space-between;

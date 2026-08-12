@@ -237,10 +237,11 @@ function attractionOptions(selectedId) {
 }
 
 function updateEditControls() {
-  editToggle.textContent = editMode ? "完成编辑" : "编辑行程";
-  editToggle.classList.toggle("btn-primary", editMode);
-  editToggle.classList.toggle("btn-ghost", !editMode);
+  editToggle.textContent = editMode ? "✓ 完成编辑" : "✏️ 编辑行程";
   resetItinerary.classList.toggle("is-hidden", !editMode);
+  document.getElementById("editBanner")?.classList.toggle("is-editing", editMode);
+  const heroEditBtn = document.getElementById("heroEditBtn");
+  if (heroEditBtn) heroEditBtn.textContent = editMode ? "✓ 完成编辑" : "✏️ 编辑行程";
 }
 
 function renderIslandCards() {
@@ -713,6 +714,23 @@ editToggle.addEventListener("click", () => {
   updateEditControls();
   renderDaySwitch();
   renderRouteBoard();
+  if (editMode) {
+    document.getElementById("route").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+});
+
+function enterEditFromHero() {
+  editMode = true;
+  updateEditControls();
+  renderDaySwitch();
+  renderRouteBoard();
+  document.getElementById("route").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+document.getElementById("heroEditBtn")?.addEventListener("click", enterEditFromHero);
+document.getElementById("navEdit")?.addEventListener("click", (e) => {
+  e.preventDefault();
+  enterEditFromHero();
 });
 
 undoBtn.addEventListener("click", undo);
