@@ -1,9 +1,12 @@
 (() => {
   // Free shared JSON store — no Firebase / no signup.
   // Anyone with the trip link can read & write this same copy.
+  // Prefer same-origin on Vercel; GitHub Pages uses the Vercel API (CORS enabled).
   const SYNC_URL =
     window.TRIP_SYNC_URL ||
-    "https://jsonbin-zeta.vercel.app/api/bins/Kp30So05gV";
+    (typeof location !== "undefined" && /vercel\.app$|localhost|127\.0\.0\.1/.test(location.hostname)
+      ? "/api/trip"
+      : "https://web-zeta-eight-yq01f1vb2z.vercel.app/api/trip");
   const POLL_MS = 4000;
 
   let ready = false;
