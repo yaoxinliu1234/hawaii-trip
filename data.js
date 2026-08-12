@@ -1,10 +1,10 @@
 window.HAWAII_DATA = {
   tripDates: {
-    start: "2026-10-12",
+    start: "2026-10-13",
     end: "2026-10-19",
-    label: "2026.10.12 – 10.19",
-    nights: 7,
-    days: 8
+    label: "2026.10.13 – 10.19",
+    nights: 6,
+    days: 7
   },
   tripFlights: {
     arrivalAirport: "",
@@ -53,16 +53,15 @@ window.HAWAII_DATA = {
   },
   itineraries: {
     trip: {
-      name: "Yaoxin 夏威夷 8日 · 10/12–10/19",
+      name: "Yaoxin 夏威夷 7日 · 10/13–10/19",
       days: [
-        { day: 1, date: "10/12", weekday: "周一", title: "", theme: "", island: "bigIsland", stops: [] },
-        { day: 2, date: "10/13", weekday: "周二", title: "", theme: "", island: "bigIsland", stops: [] },
-        { day: 3, date: "10/14", weekday: "周三", title: "", theme: "", island: "bigIsland", stops: [] },
-        { day: 4, date: "10/15", weekday: "周四", title: "", theme: "", island: "bigIsland", stops: [] },
-        { day: 5, date: "10/16", weekday: "周五", title: "", theme: "", island: "oahu", stops: [] },
-        { day: 6, date: "10/17", weekday: "周六", title: "", theme: "", island: "oahu", stops: [] },
-        { day: 7, date: "10/18", weekday: "周日", title: "", theme: "", island: "oahu", stops: [] },
-        { day: 8, date: "10/19", weekday: "周一", title: "", theme: "", island: "oahu", stops: [] }
+        { day: 1, date: "10/13", weekday: "周二", title: "", theme: "", island: "bigIsland", stops: [] },
+        { day: 2, date: "10/14", weekday: "周三", title: "", theme: "", island: "bigIsland", stops: [] },
+        { day: 3, date: "10/15", weekday: "周四", title: "", theme: "", island: "bigIsland", stops: [] },
+        { day: 4, date: "10/16", weekday: "周五", title: "", theme: "", island: "oahu", stops: [] },
+        { day: 5, date: "10/17", weekday: "周六", title: "", theme: "", island: "oahu", stops: [] },
+        { day: 6, date: "10/18", weekday: "周日", title: "", theme: "", island: "oahu", stops: [] },
+        { day: 7, date: "10/19", weekday: "周一", title: "", theme: "", island: "oahu", stops: [] }
       ]
     },
     oahu: {
@@ -75,19 +74,18 @@ window.HAWAII_DATA = {
       ]
     },
     bigIsland: {
-      name: "大岛 · 10/12–10/15",
+      name: "大岛 · 10/13–10/15",
       days: [
-        { day: 1, date: "10/12", weekday: "周一", title: "", theme: "", island: "bigIsland", stops: [] },
-        { day: 2, date: "10/13", weekday: "周二", title: "", theme: "", island: "bigIsland", stops: [] },
-        { day: 3, date: "10/14", weekday: "周三", title: "", theme: "", island: "bigIsland", stops: [] },
-        { day: 4, date: "10/15", weekday: "周四", title: "", theme: "", island: "bigIsland", stops: [] }
+        { day: 1, date: "10/13", weekday: "周二", title: "", theme: "", island: "bigIsland", stops: [] },
+        { day: 2, date: "10/14", weekday: "周三", title: "", theme: "", island: "bigIsland", stops: [] },
+        { day: 3, date: "10/15", weekday: "周四", title: "", theme: "", island: "bigIsland", stops: [] }
       ]
     }
   },
   tips: [
     { category: "行程日期", icon: "📅", items: [
-      "Yaoxin 行程：2026年10月12日 – 10月19日（共 8 天 / 7 晚）",
-      "先大岛 10/12–10/15，再欧胡岛 10/16–10/19（可自行调整）",
+      "Yaoxin 行程：2026年10月13日 – 10月19日（共 7 天 / 6 晚）",
+      "先大岛 10/13–10/15，再欧胡岛 10/16–10/19（可自行调整）",
       "航班机场填在「手账路线图」顶部：抵达机场 / 返程机场 / 岛间航班",
       "行程空白，请自己添加每一站的时间、Notes 和图片"
     ]},

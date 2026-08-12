@@ -3,7 +3,7 @@ let activeIsland = "trip";
 let activeDay = 0;
 let editMode = false;
 
-const STORAGE_KEY = "hawaii-trip-v5-flights";
+const STORAGE_KEY = "hawaii-trip-v6-oct13-19";
 const defaultItineraries = JSON.parse(JSON.stringify(data.itineraries));
 const defaultTripFlights = JSON.parse(JSON.stringify(data.tripFlights || {
   arrivalAirport: "",
@@ -17,7 +17,7 @@ const undoStack = [];
 const MAX_UNDO = 40;
 
 const ROUTE_TABS = [
-  { id: "trip", name: "完整 8 日", emoji: "🌺", color: "#0B6E8A" },
+  { id: "trip", name: "完整 7 日", emoji: "🌺", color: "#0B6E8A" },
   { id: "bigIsland", name: "大岛先", emoji: "🌋", color: "#C1440E" },
   { id: "oahu", name: "欧胡岛后", emoji: "🏄", color: "#0B6E8A" }
 ];
@@ -392,7 +392,7 @@ function renderFlightCard() {
             <input class="edit-input" data-flight="arrivalAirport" list="airportList" value="${escapeHtml(f.arrivalAirport)}" placeholder="例如：KOA" />
           </label>
           <label class="edit-label">抵达备注
-            <input class="edit-input" data-flight="arrivalNote" value="${escapeHtml(f.arrivalNote)}" placeholder="例如：10/12 下午从湾区出发" />
+            <input class="edit-input" data-flight="arrivalNote" value="${escapeHtml(f.arrivalNote)}" placeholder="例如：10/13 下午抵达 KOA" />
           </label>
           <label class="edit-label">返程机场
             <input class="edit-input" data-flight="departureAirport" list="airportList" value="${escapeHtml(f.departureAirport)}" placeholder="例如：HNL" />
@@ -704,8 +704,8 @@ function renderRouteBoardEdit() {
         <label class="edit-label">当天标题
           <input class="edit-input edit-day-title" value="${escapeHtml(day.title)}" placeholder="例如：抵达 · 威基基" />
         </label>
-        <label class="edit-label">日期（如 10/12）
-          <input class="edit-input edit-day-date" value="${escapeHtml(day.date || "")}" placeholder="10/12" />
+        <label class="edit-label">日期（如 10/13）
+          <input class="edit-input edit-day-date" value="${escapeHtml(day.date || "")}" placeholder="10/13" />
         </label>
         <label class="edit-label">当天时间（可选）
           <input class="edit-input edit-day-time" value="${escapeHtml(day.dayTime || "")}" placeholder="例如：航班 14:30 抵达 / 全天自驾" />
