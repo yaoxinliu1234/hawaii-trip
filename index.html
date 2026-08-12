@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Outfit:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=11" />
+  <link rel="stylesheet" href="styles.css?v=12" />
 </head>
 <body class="intro-lock">
   <!-- Intro splash -->
@@ -95,18 +95,10 @@
         <button class="btn btn-primary" type="button" id="editToggle">✏️ 编辑行程</button>
       </div>
 
-      <div class="sync-bar" id="syncBar">
+      <div class="sync-bar sync-bar-ok" id="syncBar">
         <div class="sync-copy">
-          <strong>共同编辑</strong>
-          <span id="syncStatus">检查同步状态…</span>
-        </div>
-        <div class="sync-actions">
-          <button class="btn btn-ghost" type="button" id="exportTripBtn">导出</button>
-          <label class="btn btn-ghost">
-            导入
-            <input id="importTripFile" type="file" accept="application/json,.json" hidden />
-          </label>
-          <button class="btn btn-ghost" type="button" id="cloudSetupBtn">云端设置</button>
+          <strong>共同编辑 · 已开自动同步</strong>
+          <span id="syncStatus">正在连接云端…</span>
         </div>
       </div>
 
@@ -157,35 +149,9 @@
 
   </div><!-- /#site -->
 
-  <dialog id="cloudSetupModal" class="modal">
-    <article class="modal-card setup-card">
-      <button class="modal-close" id="cloudSetupClose" type="button" aria-label="关闭">×</button>
-      <div class="setup-body">
-        <h2>为什么手机看不到？</h2>
-        <p>现在默认保存在<strong>这台设备的浏览器</strong>里。电脑改的，手机和朋友都读不到。</p>
-        <h3>立刻可用</h3>
-        <ol>
-          <li>在这台电脑点「导出」</li>
-          <li>把 JSON 文件发到手机 / 朋友</li>
-          <li>对方打开网站后点「导入」</li>
-        </ol>
-        <h3>推荐：云端共同编辑（一次设置）</h3>
-        <ol>
-          <li>打开 <a href="https://console.firebase.google.com/" target="_blank" rel="noreferrer">Firebase 控制台</a></li>
-          <li>新建项目 → 创建 <strong>Realtime Database</strong>（测试模式）</li>
-          <li>项目设置里复制 <code>firebaseConfig</code></li>
-          <li>粘贴进网站的 <code>firebase-config.js</code> 后重新部署</li>
-        </ol>
-        <p class="setup-note">配置成功后，大家打开同一链接即可共同编辑，Trip ID：<code id="setupTripId"></code></p>
-      </div>
-    </article>
-  </dialog>
 
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-  <script src="firebase-config.js?v=11"></script>
-  <script src="cloud.js?v=11"></script>
-  <script src="data.js?v=11"></script>
-  <script src="app.js?v=11"></script>
+  <script src="cloud.js?v=12"></script>
+  <script src="data.js?v=12"></script>
+  <script src="app.js?v=12"></script>
 </body>
 </html>

@@ -1285,16 +1285,6 @@ document.getElementById("importTripFile")?.addEventListener("change", (e) => {
   e.target.value = "";
 });
 
-const cloudSetupModal = document.getElementById("cloudSetupModal");
-document.getElementById("cloudSetupBtn")?.addEventListener("click", () => {
-  const idEl = document.getElementById("setupTripId");
-  if (idEl) idEl.textContent = window.TRIP_CLOUD_ID || "yaoxin-hawaii-2026";
-  cloudSetupModal?.showModal();
-});
-document.getElementById("cloudSetupClose")?.addEventListener("click", () => cloudSetupModal?.close());
-cloudSetupModal?.addEventListener("click", (e) => {
-  if (e.target === cloudSetupModal) cloudSetupModal.close();
-});
 
 modalClose.addEventListener("click", () => modal.close());
 modal.addEventListener("click", (e) => {

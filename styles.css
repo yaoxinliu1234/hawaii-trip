@@ -1230,6 +1230,10 @@ img { max-width: 100%; display: block; }
   background: #fff8e8;
   border: 1px solid rgba(193, 68, 14, 0.2);
 }
+.sync-bar-ok {
+  background: #eef9f6;
+  border-color: rgba(11, 110, 138, 0.22);
+}
 .sync-copy strong {
   display: block;
   margin-bottom: 4px;
