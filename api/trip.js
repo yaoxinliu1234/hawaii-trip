@@ -7,6 +7,14 @@ function setCors(res) {
   res.setHeader("Cache-Control", "no-store");
 }
 
+async function readRawBody(req) {
+  if (typeof req.body === "string" && req.body) return req.body;
+  if (req.body && typeof req.body === "object") return JSON.stringify(req.body);
+  const chunks = [];
+  for await (const chunk of req) chunks.push(Buffer.from(chunk));
+  return Buffer.concat(chunks).toString("utf8") || "{}";
+}
+
 module.exports = async function handler(req, res) {
   setCors(res);
   if (req.method === "OPTIONS") {
@@ -26,8 +34,7 @@ module.exports = async function handler(req, res) {
     }
 
     if (req.method === "PUT") {
-      const body =
-        typeof req.body === "string" ? req.body : JSON.stringify(req.body ?? {});
+      const body = await readRawBody(req);
       const r = await fetch(UPSTREAM, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
