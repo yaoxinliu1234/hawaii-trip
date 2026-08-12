@@ -28,16 +28,31 @@
     };
   }
 
+  function isValidItineraries(itin) {
+    return Boolean(
+      itin &&
+        typeof itin === "object" &&
+        itin.all &&
+        Array.isArray(itin.all.days) &&
+        itin.bigIsland &&
+        itin.oahu
+    );
+  }
+
   function hasMeaningfulLocal(payload) {
+    if (!isValidItineraries(payload.itineraries)) return false;
     const hasLegs = payload.tripFlights?.legs?.length;
     const hasStops = Object.values(payload.itineraries || {}).some((it) =>
       (it.days || []).some((d) => (d.stops || []).length)
     );
-    return Boolean(hasLegs || hasStops);
+    const hasTitles = Object.values(payload.itineraries || {}).some((it) =>
+      (it.days || []).some((d) => (d.title || "").trim() || (d.theme || "").trim())
+    );
+    return Boolean(hasLegs || hasStops || hasTitles);
   }
 
   function applyPayload(payload) {
-    if (!payload || !payload.itineraries) return false;
+    if (!payload || !isValidItineraries(payload.itineraries)) return false;
     applyingRemote = true;
     window.HAWAII_DATA.itineraries = payload.itineraries;
     window.HAWAII_DATA.tripFlights = payload.tripFlights || { legs: [] };
@@ -61,7 +76,6 @@
     const res = await fetch(SYNC_URL, { cache: "no-store" });
     if (!res.ok) throw new Error("GET " + res.status);
     const json = await res.json();
-    // API may wrap as { data: {...} } or return the object directly
     return json && json.data && json.data.itineraries ? json.data : json;
   }
 
@@ -80,19 +94,16 @@
     try {
       const remote = await fetchRemote();
       const remoteAt = remote && remote.updatedAt ? remote.updatedAt : "";
-      const remoteEmpty =
-        !remote ||
-        !remote.itineraries ||
-        (!hasMeaningfulLocal(remote) && !remoteAt);
+      const remoteValid = isValidItineraries(remote && remote.itineraries);
 
-      if (boot && remoteEmpty && hasMeaningfulLocal(getPayload())) {
-        setStatus("正在把本机行程上传到云端…", "muted");
+      if (boot && !remoteValid) {
+        // Seed cloud with current local/default trip once
         await pushRemote(getPayload());
         setStatus("已自动同步 · 手机和朋友打开同一链接即可", "ok");
         return;
       }
 
-      if (!remote || !remote.itineraries) {
+      if (!remoteValid) {
         if (boot) setStatus("云端已就绪 · 编辑后会自动同步", "ok");
         return;
       }
