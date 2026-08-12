@@ -3,8 +3,16 @@ let activeIsland = "trip";
 let activeDay = 0;
 let editMode = false;
 
-const STORAGE_KEY = "hawaii-itineraries-v4-empty-big-first";
+const STORAGE_KEY = "hawaii-trip-v5-flights";
 const defaultItineraries = JSON.parse(JSON.stringify(data.itineraries));
+const defaultTripFlights = JSON.parse(JSON.stringify(data.tripFlights || {
+  arrivalAirport: "",
+  arrivalNote: "",
+  departureAirport: "",
+  departureNote: "",
+  interIsland: ""
+}));
+if (!data.tripFlights) data.tripFlights = clone(defaultTripFlights);
 const undoStack = [];
 const MAX_UNDO = 40;
 
@@ -114,33 +122,55 @@ function loadSavedItineraries() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
       data.itineraries = normalizeItineraries(data.itineraries);
+      data.tripFlights = clone(defaultTripFlights);
       return;
     }
-    data.itineraries = normalizeItineraries(JSON.parse(raw));
+    const saved = JSON.parse(raw);
+    if (saved.itineraries) {
+      data.itineraries = normalizeItineraries(saved.itineraries);
+      data.tripFlights = { ...clone(defaultTripFlights), ...(saved.tripFlights || {}) };
+    } else {
+      // legacy: only itineraries were stored
+      data.itineraries = normalizeItineraries(saved);
+      data.tripFlights = clone(defaultTripFlights);
+    }
   } catch (_) {
     data.itineraries = normalizeItineraries(defaultItineraries);
+    data.tripFlights = clone(defaultTripFlights);
   }
 }
 
 function persist() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data.itineraries));
+  localStorage.setItem(
+    STORAGE_KEY,
+    JSON.stringify({
+      itineraries: data.itineraries,
+      tripFlights: data.tripFlights
+    })
+  );
   updateUndoButton();
 }
 
 function pushUndo() {
-  undoStack.push(clone(data.itineraries));
+  undoStack.push({
+    itineraries: clone(data.itineraries),
+    tripFlights: clone(data.tripFlights)
+  });
   if (undoStack.length > MAX_UNDO) undoStack.shift();
   updateUndoButton();
 }
 
 function undo() {
   if (!undoStack.length) return;
-  data.itineraries = undoStack.pop();
+  const prev = undoStack.pop();
+  data.itineraries = prev.itineraries;
+  data.tripFlights = prev.tripFlights;
   persist();
   if (activeDay >= currentItinerary().days.length) {
     activeDay = Math.max(0, currentItinerary().days.length - 1);
   }
   renderDaySwitch();
+  renderFlightCard();
   renderRouteBoard();
 }
 
@@ -334,6 +364,94 @@ function renderIslandSwitch() {
       renderAll();
     });
   });
+}
+
+function airportLabel(code) {
+  const map = {
+    KOA: "Kona (KOA)",
+    ITO: "Hilo (ITO)",
+    HNL: "檀香山 (HNL)",
+    OGG: "Kahului / Maui (OGG)",
+    LIH: "Lihue / Kauai (LIH)"
+  };
+  const key = String(code || "").trim().toUpperCase();
+  return map[key] || code || "未填写";
+}
+
+function renderFlightCard() {
+  const card = document.getElementById("flightCard");
+  if (!card) return;
+  const f = data.tripFlights;
+
+  if (editMode) {
+    card.innerHTML = `
+      <div class="flight-edit">
+        <div class="flight-edit-title">✈️ 航班 / 机场（整趟行程）</div>
+        <div class="flight-grid">
+          <label class="edit-label">抵达机场
+            <input class="edit-input" data-flight="arrivalAirport" list="airportList" value="${escapeHtml(f.arrivalAirport)}" placeholder="例如：KOA" />
+          </label>
+          <label class="edit-label">抵达备注
+            <input class="edit-input" data-flight="arrivalNote" value="${escapeHtml(f.arrivalNote)}" placeholder="例如：10/12 下午从湾区出发" />
+          </label>
+          <label class="edit-label">返程机场
+            <input class="edit-input" data-flight="departureAirport" list="airportList" value="${escapeHtml(f.departureAirport)}" placeholder="例如：HNL" />
+          </label>
+          <label class="edit-label">返程备注
+            <input class="edit-input" data-flight="departureNote" value="${escapeHtml(f.departureNote)}" placeholder="例如：10/19 晚上回湾区" />
+          </label>
+          <label class="edit-label flight-span">岛间航班（可选）
+            <input class="edit-input" data-flight="interIsland" value="${escapeHtml(f.interIsland)}" placeholder="例如：10/15 KOA → HNL" />
+          </label>
+        </div>
+        <datalist id="airportList">
+          <option value="KOA">Kona 大岛</option>
+          <option value="ITO">Hilo 大岛</option>
+          <option value="HNL">檀香山 欧胡岛</option>
+        </datalist>
+        <p class="edit-hint">先大岛再欧胡的话，常见是抵达 KOA/ITO，返程 HNL。</p>
+      </div>
+    `;
+
+    card.querySelectorAll("[data-flight]").forEach((field) => {
+      let snap = null;
+      field.addEventListener("focus", () => {
+        snap = clone(data.tripFlights);
+      });
+      field.addEventListener("input", () => {
+        data.tripFlights[field.dataset.flight] = field.value;
+      });
+      field.addEventListener("blur", () => {
+        if (!snap) return;
+        if (JSON.stringify(snap) !== JSON.stringify(data.tripFlights)) {
+          undoStack.push({
+            itineraries: clone(data.itineraries),
+            tripFlights: snap
+          });
+          if (undoStack.length > MAX_UNDO) undoStack.shift();
+          persist();
+        }
+        snap = null;
+      });
+    });
+    return;
+  }
+
+  const hasAny = f.arrivalAirport || f.departureAirport || f.interIsland || f.arrivalNote || f.departureNote;
+  card.innerHTML = `
+    <div class="flight-view">
+      <div class="flight-edit-title">✈️ 航班 / 机场</div>
+      ${
+        hasAny
+          ? `<div class="flight-rows">
+              <div class="flight-row"><span>抵达</span><strong>${escapeHtml(airportLabel(f.arrivalAirport))}</strong><em>${escapeHtml(f.arrivalNote || "")}</em></div>
+              <div class="flight-row"><span>返程</span><strong>${escapeHtml(airportLabel(f.departureAirport))}</strong><em>${escapeHtml(f.departureNote || "")}</em></div>
+              ${f.interIsland ? `<div class="flight-row"><span>岛间</span><strong>${escapeHtml(f.interIsland)}</strong><em></em></div>` : ""}
+            </div>`
+          : `<p class="flight-empty">还没填机场。点「编辑行程」添加抵达 / 返程机场。</p>`
+      }
+    </div>
+  `;
 }
 
 function renderDaySwitch() {
@@ -621,7 +739,10 @@ function renderRouteBoardEdit() {
 
   const bindTextUndo = (el, apply) => {
     el.addEventListener("focus", () => {
-      dayFocusSnapshot = clone(data.itineraries);
+      dayFocusSnapshot = {
+        itineraries: clone(data.itineraries),
+        tripFlights: clone(data.tripFlights)
+      };
     });
     el.addEventListener("input", () => {
       apply(el.value);
@@ -631,7 +752,7 @@ function renderRouteBoardEdit() {
     });
     el.addEventListener("blur", () => {
       if (!dayFocusSnapshot) return;
-      if (JSON.stringify(dayFocusSnapshot) !== JSON.stringify(data.itineraries)) {
+      if (JSON.stringify(dayFocusSnapshot.itineraries) !== JSON.stringify(data.itineraries)) {
         undoStack.push(dayFocusSnapshot);
         if (undoStack.length > MAX_UNDO) undoStack.shift();
         persist();
@@ -675,7 +796,10 @@ function renderRouteBoardEdit() {
       }
 
       field.addEventListener("focus", () => {
-        stopFocusSnapshot = clone(data.itineraries);
+        stopFocusSnapshot = {
+          itineraries: clone(data.itineraries),
+          tripFlights: clone(data.tripFlights)
+        };
       });
       field.addEventListener("input", () => {
         day.stops[index][field.dataset.field] = field.value;
@@ -684,7 +808,7 @@ function renderRouteBoardEdit() {
       });
       field.addEventListener("blur", () => {
         if (!stopFocusSnapshot) return;
-        if (JSON.stringify(stopFocusSnapshot) !== JSON.stringify(data.itineraries)) {
+        if (JSON.stringify(stopFocusSnapshot.itineraries) !== JSON.stringify(data.itineraries)) {
           undoStack.push(stopFocusSnapshot);
           if (undoStack.length > MAX_UNDO) undoStack.shift();
           persist();
@@ -837,6 +961,7 @@ function renderAll() {
   updateEditControls();
   updateUndoButton();
   renderIslandSwitch();
+  renderFlightCard();
   renderDaySwitch();
   renderRouteBoard();
   renderSpots();
@@ -845,6 +970,7 @@ function renderAll() {
 editToggle.addEventListener("click", () => {
   editMode = !editMode;
   updateEditControls();
+  renderFlightCard();
   renderDaySwitch();
   renderRouteBoard();
   if (editMode) {
@@ -855,6 +981,7 @@ editToggle.addEventListener("click", () => {
 function enterEditFromHero() {
   editMode = true;
   updateEditControls();
+  renderFlightCard();
   renderDaySwitch();
   renderRouteBoard();
   document.getElementById("route").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -878,13 +1005,15 @@ document.addEventListener("keydown", (e) => {
 });
 
 resetItinerary.addEventListener("click", () => {
-  if (!window.confirm("恢复默认行程？你改过的内容会清掉。")) return;
+  if (!window.confirm("恢复空白行程？你改过的内容会清掉。")) return;
   pushUndo();
   data.itineraries = normalizeItineraries(defaultItineraries);
+  data.tripFlights = clone(defaultTripFlights);
   localStorage.removeItem(STORAGE_KEY);
   activeDay = 0;
   persist();
   renderDaySwitch();
+  renderFlightCard();
   renderRouteBoard();
 });
 

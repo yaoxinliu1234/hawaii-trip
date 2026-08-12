@@ -1092,8 +1092,53 @@ img { max-width: 100%; display: block; }
 .roadmap .photo-card.custom img {
   background: #ddd;
 }
-.empty-day {
-  grid-column: 1 / -1;
+.flight-card {
+  margin: 0 0 16px;
+}
+.flight-view,
+.flight-edit {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: var(--shadow);
+}
+.flight-edit-title {
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+.flight-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.flight-span { grid-column: 1 / -1; }
+.flight-rows { display: grid; gap: 10px; }
+.flight-row {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  gap: 4px 12px;
+  align-items: baseline;
+}
+.flight-row span {
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.flight-row strong { font-size: 1rem; }
+.flight-row em {
+  grid-column: 2;
+  color: var(--muted);
+  font-style: normal;
+  font-size: 0.88rem;
+}
+.flight-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+@media (max-width: 700px) {
+  .flight-grid { grid-template-columns: 1fr; }
 }
 .empty-day-card {
   margin-top: 12px;
