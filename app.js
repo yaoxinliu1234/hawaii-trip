@@ -633,7 +633,14 @@ function renderFlightCard() {
           ? `<div class="flight-timeline">
               ${legs
                 .map(
-                  (leg, index) => `
+                  (leg, index) => {
+                    const next = legs[index + 1];
+                    const isTransfer =
+                      next &&
+                      leg.to &&
+                      next.from &&
+                      String(leg.to).trim().toUpperCase() === String(next.from).trim().toUpperCase();
+                    return `
                 <div class="flight-leg-view">
                   <div class="flight-leg-badge">${kindLabel(leg.kind)}</div>
                   <div class="flight-leg-main">
@@ -645,9 +652,10 @@ function renderFlightCard() {
                     </div>
                     ${leg.notes ? `<em>${escapeHtml(leg.notes)}</em>` : ""}
                   </div>
-                  ${index < legs.length - 1 ? `<div class="flight-connector">转机</div>` : ""}
+                  ${isTransfer ? `<div class="flight-connector">转机</div>` : ""}
                 </div>
-              `
+              `;
+                  }
                 )
                 .join("")}
             </div>`
