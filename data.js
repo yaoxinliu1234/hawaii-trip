@@ -48,114 +48,50 @@ window.HAWAII_DATA = {
     trip: {
       name: "Yaoxin 夏威夷 8日 · 10/12–10/19",
       days: [
-        { day: 1, date: "10/12", weekday: "周一", title: "抵达欧胡岛 · 威基基", theme: "Oahu · Arrival", island: "oahu", stops: [
-          { num: 1, time: "下午", content: "飞抵檀香山 HNL，入住酒店", attractionId: null, notes: "" },
-          { num: 2, time: "傍晚", content: "威基基海滩散步，看日落", attractionId: "waikiki", notes: "" },
-          { num: 3, time: "晚上", content: "Kalakaua Avenue 逛街用餐", attractionId: null, notes: "" }
-        ]},
-        { day: 2, date: "10/13", weekday: "周二", title: "珍珠港 · 市区", theme: "Oahu · History", island: "oahu", stops: [
-          { num: 1, time: "上午", content: "珍珠港亚利桑那号纪念馆", attractionId: "pearlharbor", notes: "提前预约" },
-          { num: 2, time: "下午", content: "Iolani Palace、唐人街", attractionId: null, notes: "" },
-          { num: 3, time: "傍晚", content: "Magic Island / 威基基日落", attractionId: "waikiki", notes: "" }
-        ]},
-        { day: 3, date: "10/14", weekday: "周三", title: "东岸 · 浮潜", theme: "Oahu · Beach", island: "oahu", stops: [
-          { num: 1, time: "上午", content: "Hanauma Bay 浮潜", attractionId: "hanauma", notes: "需在线预约 + reef-safe 防晒" },
-          { num: 2, time: "下午", content: "Lanikai 海滩 + Pillbox Trail", attractionId: "lanikai", notes: "" },
-          { num: 3, time: "傍晚", content: "Kailua 小镇晚餐", attractionId: null, notes: "" }
-        ]},
-        { day: 4, date: "10/15", weekday: "周四", title: "北岸 · 古兰尼 · 傍晚飞大岛", theme: "Oahu → Big Island", island: "oahu", stops: [
-          { num: 1, time: "上午", content: "古兰尼牧场 Movie Sites Tour", attractionId: "kualoa", notes: "" },
-          { num: 2, time: "下午", content: "North Shore 冲浪海岸 & Shrimp Truck", attractionId: "northshore", notes: "" },
-          { num: 3, time: "傍晚", content: "飞往大岛 Kona (HNL → KOA)", attractionId: null, notes: "岛间航班约 40 分钟，取租车" }
-        ]},
-        { day: 5, date: "10/16", weekday: "周五", title: "Kona · 魔鬼鱼", theme: "Big Island · Kona", island: "bigIsland", stops: [
-          { num: 1, time: "上午", content: "Kona 咖啡农场参观", attractionId: "coffee", notes: "" },
-          { num: 2, time: "下午", content: "Kona 海岸放松 / 浮潜", attractionId: null, notes: "" },
-          { num: 3, time: "晚上", content: "魔鬼鱼夜潜", attractionId: "manta", notes: "提前预订" }
-        ]},
-        { day: 6, date: "10/17", weekday: "周六", title: "火山国家公园", theme: "Big Island · Volcano", island: "bigIsland", stops: [
-          { num: 1, time: "上午", content: "驱车前往火山国家公园", attractionId: "hvnp", notes: "车程约 2 小时" },
-          { num: 2, time: "下午", content: "Kilauea Iki Trail 徒步", attractionId: "hvnp", notes: "" },
-          { num: 3, time: "晚上", content: "观赏熔岩 glow，住 Volcano / Hilo", attractionId: "hvnp", notes: "" }
-        ]},
-        { day: 7, date: "10/18", weekday: "周日", title: "瀑布 · 黑沙滩 · 咖啡", theme: "Big Island · South/East", island: "bigIsland", stops: [
-          { num: 1, time: "上午", content: "Akaka Falls 或 Hilo 市场", attractionId: "akaka", notes: "" },
-          { num: 2, time: "下午", content: "Punalu'u 黑沙滩看海龟", attractionId: "punaluu", notes: "" },
-          { num: 3, time: "傍晚", content: "回 Kona，可选绿沙滩 / 咖啡", attractionId: "papakolea", notes: "绿沙滩视体力与时间" }
-        ]},
-        { day: 8, date: "10/19", weekday: "周一", title: "Mauna Kea · 返程", theme: "Big Island · Departure", island: "bigIsland", stops: [
-          { num: 1, time: "上午", content: "视航班：轻松早晨 / 最后采购", attractionId: null, notes: "" },
-          { num: 2, time: "下午", content: "有时间可去 Mauna Kea Visitor Center", attractionId: "maunakea", notes: "高海拔，注意身体" },
-          { num: 3, time: "晚上", content: "从 KOA / ITO 返程", attractionId: null, notes: "核对航班时间" }
-        ]}
+        { day: 1, date: "10/12", weekday: "周一", title: "", theme: "", island: "bigIsland", stops: [] },
+        { day: 2, date: "10/13", weekday: "周二", title: "", theme: "", island: "bigIsland", stops: [] },
+        { day: 3, date: "10/14", weekday: "周三", title: "", theme: "", island: "bigIsland", stops: [] },
+        { day: 4, date: "10/15", weekday: "周四", title: "", theme: "", island: "bigIsland", stops: [] },
+        { day: 5, date: "10/16", weekday: "周五", title: "", theme: "", island: "oahu", stops: [] },
+        { day: 6, date: "10/17", weekday: "周六", title: "", theme: "", island: "oahu", stops: [] },
+        { day: 7, date: "10/18", weekday: "周日", title: "", theme: "", island: "oahu", stops: [] },
+        { day: 8, date: "10/19", weekday: "周一", title: "", theme: "", island: "oahu", stops: [] }
       ]
     },
     oahu: {
-      name: "欧胡岛参考 · 10/12–10/15",
+      name: "欧胡岛 · 10/16–10/19",
       days: [
-        { day: 1, date: "10/12", weekday: "周一", title: "抵达 · 威基基", theme: "Waikiki", island: "oahu", stops: [
-          { num: 1, time: "下午", content: "抵达檀香山机场，入住酒店", attractionId: null, notes: "" },
-          { num: 2, time: "傍晚", content: "威基基海滩散步，看日落", attractionId: "waikiki", notes: "" },
-          { num: 3, time: "晚上", content: "Kalakaua Avenue 逛街用餐", attractionId: null, notes: "" }
-        ]},
-        { day: 2, date: "10/13", weekday: "周二", title: "珍珠港 · 市区", theme: "History & City", island: "oahu", stops: [
-          { num: 1, time: "上午", content: "珍珠港亚利桑那号纪念馆", attractionId: "pearlharbor", notes: "提前预约" },
-          { num: 2, time: "下午", content: "Iolani Palace、唐人街", attractionId: null, notes: "" },
-          { num: 3, time: "傍晚", content: "Magic Island 看日落", attractionId: "waikiki", notes: "" }
-        ]},
-        { day: 3, date: "10/14", weekday: "周三", title: "东岸 · 浮潜", theme: "Snorkel & Beach", island: "oahu", stops: [
-          { num: 1, time: "上午", content: "Hanauma Bay 浮潜", attractionId: "hanauma", notes: "" },
-          { num: 2, time: "下午", content: "Lanikai 海滩 + Pillbox Trail", attractionId: "lanikai", notes: "" },
-          { num: 3, time: "傍晚", content: "Kailua 小镇晚餐", attractionId: null, notes: "" }
-        ]},
-        { day: 4, date: "10/15", weekday: "周四", title: "北岸 · 飞大岛", theme: "North Shore", island: "oahu", stops: [
-          { num: 1, time: "上午", content: "古兰尼牧场 Movie Sites Tour", attractionId: "kualoa", notes: "" },
-          { num: 2, time: "下午", content: "North Shore 看冲浪 & Shrimp Truck", attractionId: "northshore", notes: "" },
-          { num: 3, time: "傍晚", content: "飞往大岛 Kona", attractionId: null, notes: "HNL → KOA" }
-        ]}
+        { day: 1, date: "10/16", weekday: "周五", title: "", theme: "", island: "oahu", stops: [] },
+        { day: 2, date: "10/17", weekday: "周六", title: "", theme: "", island: "oahu", stops: [] },
+        { day: 3, date: "10/18", weekday: "周日", title: "", theme: "", island: "oahu", stops: [] },
+        { day: 4, date: "10/19", weekday: "周一", title: "", theme: "", island: "oahu", stops: [] }
       ]
     },
     bigIsland: {
-      name: "大岛参考 · 10/16–10/19",
+      name: "大岛 · 10/12–10/15",
       days: [
-        { day: 1, date: "10/16", weekday: "周五", title: "Kona · 魔鬼鱼", theme: "Kona Coast", island: "bigIsland", stops: [
-          { num: 1, time: "上午", content: "Kona 咖啡农场", attractionId: "coffee", notes: "" },
-          { num: 2, time: "下午", content: "西海岸放松", attractionId: null, notes: "" },
-          { num: 3, time: "晚上", content: "魔鬼鱼夜潜", attractionId: "manta", notes: "提前预订" }
-        ]},
-        { day: 2, date: "10/17", weekday: "周六", title: "火山国家公园", theme: "Volcano Day", island: "bigIsland", stops: [
-          { num: 1, time: "上午", content: "驱车前往火山国家公园", attractionId: "hvnp", notes: "" },
-          { num: 2, time: "下午", content: "Kilauea Iki Trail 徒步", attractionId: "hvnp", notes: "" },
-          { num: 3, time: "晚上", content: "观赏熔岩 glow", attractionId: "hvnp", notes: "" }
-        ]},
-        { day: 3, date: "10/18", weekday: "周日", title: "瀑布 · 黑沙滩", theme: "South / East", island: "bigIsland", stops: [
-          { num: 1, time: "上午", content: "Akaka Falls / Hilo", attractionId: "akaka", notes: "" },
-          { num: 2, time: "下午", content: "Punalu'u 黑沙滩", attractionId: "punaluu", notes: "" },
-          { num: 3, time: "傍晚", content: "回 Kona", attractionId: "coffee", notes: "" }
-        ]},
-        { day: 4, date: "10/19", weekday: "周一", title: "观星 · 返程", theme: "Departure", island: "bigIsland", stops: [
-          { num: 1, time: "上午", content: "轻松早晨 / 采购", attractionId: null, notes: "" },
-          { num: 2, time: "下午", content: "Mauna Kea Visitor Center（可选）", attractionId: "maunakea", notes: "" },
-          { num: 3, time: "晚上", content: "返程", attractionId: null, notes: "" }
-        ]}
+        { day: 1, date: "10/12", weekday: "周一", title: "", theme: "", island: "bigIsland", stops: [] },
+        { day: 2, date: "10/13", weekday: "周二", title: "", theme: "", island: "bigIsland", stops: [] },
+        { day: 3, date: "10/14", weekday: "周三", title: "", theme: "", island: "bigIsland", stops: [] },
+        { day: 4, date: "10/15", weekday: "周四", title: "", theme: "", island: "bigIsland", stops: [] }
       ]
     }
   },
   tips: [
     { category: "行程日期", icon: "📅", items: [
       "Yaoxin 行程：2026年10月12日 – 10月19日（共 8 天 / 7 晚）",
-      "10/12–10/15 欧胡岛；10/15 傍晚飞大岛；10/16–10/19 大岛",
-      "10 月仍偏旱季尾声，适合海滩与户外"
+      "先大岛 10/12–10/15，再欧胡岛 10/16–10/19（可自行调整）",
+      "行程空白，请自己添加每一站的时间、Notes 和图片"
     ]},
     { category: "从纽约/湾区出发", icon: "✈️", items: [
       "国内航班，持美国驾照或 Real ID 即可登机",
       "纽约（JFK/EWR）→ 檀香山 HNL：约 10-11 小时直飞",
       "湾区（SFO/OAK/SJC）→ 檀香山 HNL：约 5-6 小时直飞",
-      "建议先飞欧胡岛 HNL，再岛间航班去大岛 KOA 或 ITO",
-      "常用航司：Hawaiian、United、Delta、Alaska；提前 4-6 周订票更划算"
+      "先飞大岛 KOA/ITO，再岛间航班去欧胡岛 HNL",
+      "常用航司：Hawaiian、United、Delta、Alaska"
     ]},
     { category: "交通出行", icon: "🚗", items: [
-      "岛间航班约 40 分钟（HNL ↔ KOA/ITO）",
+      "岛间航班约 40 分钟（KOA/ITO ↔ HNL）",
       "大岛：强烈建议租车，景点分散",
       "欧胡岛：TheBus 覆盖主要区域，但租车更灵活",
       "左舵右行，注意限速和停车规定"

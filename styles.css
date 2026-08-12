@@ -1086,11 +1086,21 @@ img { max-width: 100%; display: block; }
 .roadmap .photo-card.custom img {
   background: #ddd;
 }
-.tl-notes {
-  margin-top: 4px;
+.empty-day {
+  grid-column: 1 / -1;
+}
+.empty-day-card {
+  margin-top: 12px;
+  background: #fff;
+  border: 1.5px dashed rgba(11, 110, 138, 0.35);
+  border-radius: 16px;
+  padding: 28px 22px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+.empty-day-card p {
+  margin: 0 0 16px;
   color: var(--muted);
-  font-size: 0.85rem;
-  white-space: pre-wrap;
 }
 .text-node .notes,
 .photo-meta .notes {

@@ -3,15 +3,15 @@ let activeIsland = "trip";
 let activeDay = 0;
 let editMode = false;
 
-const STORAGE_KEY = "hawaii-itineraries-v3-oct2026";
+const STORAGE_KEY = "hawaii-itineraries-v4-empty-big-first";
 const defaultItineraries = JSON.parse(JSON.stringify(data.itineraries));
 const undoStack = [];
 const MAX_UNDO = 40;
 
 const ROUTE_TABS = [
   { id: "trip", name: "完整 8 日", emoji: "🌺", color: "#0B6E8A" },
-  { id: "oahu", name: "欧胡岛", emoji: "🏄", color: "#0B6E8A" },
-  { id: "bigIsland", name: "大岛", emoji: "🌋", color: "#C1440E" }
+  { id: "bigIsland", name: "大岛先", emoji: "🌋", color: "#C1440E" },
+  { id: "oahu", name: "欧胡岛后", emoji: "🏄", color: "#0B6E8A" }
 ];
 
 const islandCards = document.getElementById("islandCards");
@@ -61,7 +61,7 @@ function normalizeItineraries(source) {
       weekday: day.weekday || "",
       title: day.title || `Day ${dayIndex + 1}`,
       theme: day.theme || "",
-      island: day.island || (islandId === "trip" ? "oahu" : islandId),
+      island: day.island || (islandId === "oahu" ? "oahu" : islandId === "bigIsland" ? "bigIsland" : "bigIsland"),
       stops: (day.stops || []).map((stop, stopIndex) => normalizeStop(stop, stopIndex))
     }));
   });
@@ -70,8 +70,8 @@ function normalizeItineraries(source) {
 
 function dayIslandId(day) {
   if (day?.island && data.islands[day.island]) return day.island;
-  if (activeIsland === "trip") return "oahu";
-  return activeIsland === "bigIsland" ? "bigIsland" : "oahu";
+  if (activeIsland === "trip") return "bigIsland";
+  return activeIsland === "oahu" ? "oahu" : "bigIsland";
 }
 
 function attractionMapForDay(day) {
@@ -430,14 +430,40 @@ function renderRouteBoardView() {
   const map = attractionMapForDay(day);
   const color = routeAccentColor(day);
 
+  if (!day.stops.length) {
+    routeBoard.innerHTML = `
+      <div class="empty-day">
+        <div class="day-ribbon">
+          <div class="label">${escapeHtml(dayLabel(day))}</div>
+          <h3>${escapeHtml(day.title) || "还没安排"}</h3>
+          <div class="theme">${island ? `${island.emoji} ${island.name}` : ""} · 空白行程，自己添加</div>
+        </div>
+        <div class="empty-day-card">
+          <p>这一天还没有站点。</p>
+          <button class="btn btn-primary" type="button" id="emptyAddStop">✏️ 开始添加这一天</button>
+        </div>
+      </div>
+    `;
+    document.getElementById("emptyAddStop")?.addEventListener("click", () => {
+      editMode = true;
+      updateEditControls();
+      pushUndo();
+      day.stops.push(normalizeStop({ time: "", content: "", notes: "" }, 0));
+      persist();
+      renderDaySwitch();
+      renderRouteBoard();
+    });
+    return;
+  }
+
   const timeline = day.stops
     .map(
       (stop) => `
       <div class="tl-item">
         <div class="tl-num" style="background:${color}">${stop.num}</div>
         <div>
-          <div class="tl-time">${escapeHtml(stop.time)}</div>
-          <div class="tl-text">${escapeHtml(stop.content)}</div>
+          <div class="tl-time">${escapeHtml(stop.time) || "时间未定"}</div>
+          <div class="tl-text">${escapeHtml(stop.content) || "（未填写）"}</div>
           ${stop.notes ? `<div class="tl-notes">${escapeHtml(stop.notes)}</div>` : ""}
         </div>
       </div>
@@ -474,8 +500,8 @@ function renderRouteBoardView() {
         <div class="road-stop">
           <div class="road-node" style="border-color:${color}">${stop.num}</div>
           <div class="text-node">
-            <span>${escapeHtml(stop.time)}</span>
-            <p>${escapeHtml(stop.content)}</p>
+            <span>${escapeHtml(stop.time) || "时间未定"}</span>
+            <p>${escapeHtml(stop.content) || "点击编辑添加内容"}</p>
             ${stop.notes ? `<em class="notes">${escapeHtml(stop.notes)}</em>` : ""}
           </div>
         </div>
@@ -487,7 +513,7 @@ function renderRouteBoardView() {
     <div>
       <div class="day-ribbon">
         <div class="label">${escapeHtml(dayLabel(day))}</div>
-        <h3>${escapeHtml(day.title)}</h3>
+        <h3>${escapeHtml(day.title) || "未命名的一天"}</h3>
         <div class="theme">${escapeHtml(day.theme || "")}${island ? ` · ${island.emoji} ${island.name}` : ""}</div>
       </div>
       <div class="timeline">${timeline}</div>
@@ -556,8 +582,14 @@ function renderRouteBoardEdit() {
         <label class="edit-label">日期（如 10/12）
           <input class="edit-input edit-day-date" value="${escapeHtml(day.date || "")}" placeholder="10/12" />
         </label>
+        <label class="edit-label">岛屿
+          <select class="edit-input edit-day-island">
+            <option value="bigIsland" ${dayIslandId(day) === "bigIsland" ? "selected" : ""}>🌋 大岛</option>
+            <option value="oahu" ${dayIslandId(day) === "oahu" ? "selected" : ""}>🏄 欧胡岛</option>
+          </select>
+        </label>
         <label class="edit-label">主题
-          <input class="edit-input edit-day-theme" value="${escapeHtml(day.theme || "")}" placeholder="例如：Waikiki" />
+          <input class="edit-input edit-day-theme" value="${escapeHtml(day.theme || "")}" placeholder="例如：火山日 / 威基基" />
         </label>
       </div>
       <div class="edit-stops">${stopEditors}</div>
@@ -573,6 +605,7 @@ function renderRouteBoardEdit() {
   const titleInput = routeBoard.querySelector(".edit-day-title");
   const themeInput = routeBoard.querySelector(".edit-day-theme");
   const dateInput = routeBoard.querySelector(".edit-day-date");
+  const islandSelect = routeBoard.querySelector(".edit-day-island");
   let dayFocusSnapshot = null;
 
   const bindTextUndo = (el, apply) => {
@@ -582,7 +615,7 @@ function renderRouteBoardEdit() {
     el.addEventListener("input", () => {
       apply(el.value);
       const preview = routeBoard.querySelector(".edit-preview");
-      if (preview) preview.innerHTML = renderRoadPreview(day, island, map);
+      if (preview) preview.innerHTML = renderRoadPreview(day, data.islands[dayIslandId(day)], map);
       renderDaySwitch();
     });
     el.addEventListener("blur", () => {
@@ -604,6 +637,12 @@ function renderRouteBoardEdit() {
   });
   bindTextUndo(dateInput, (value) => {
     day.date = value;
+  });
+  islandSelect.addEventListener("change", () => {
+    pushUndo();
+    day.island = islandSelect.value;
+    persist();
+    renderRouteBoardEdit();
   });
 
   routeBoard.querySelectorAll(".edit-stop").forEach((row) => {
@@ -641,7 +680,6 @@ function renderRouteBoardEdit() {
     });
 
     row.querySelector('[data-action="remove-stop"]').addEventListener("click", () => {
-      if (day.stops.length <= 1) return;
       pushUndo();
       day.stops.splice(index, 1);
       renumberStops(day);
