@@ -84,9 +84,16 @@
     </section>
 
     <section id="route" class="section route-section">
-      <div class="section-head">
-        <h2>手账路线图</h2>
-        <p>像一条路一样串联每天的景点，点照片进详情。</p>
+      <div class="section-head route-head">
+        <div>
+          <h2>手账路线图</h2>
+          <p>可编辑每一站的时间、notes、图片；支持 Undo。</p>
+        </div>
+        <div class="route-actions">
+          <button class="btn btn-ghost" type="button" id="undoBtn" disabled>Undo</button>
+          <button class="btn btn-ghost" type="button" id="editToggle">编辑行程</button>
+          <button class="btn btn-ghost is-hidden" type="button" id="resetItinerary">恢复默认</button>
+        </div>
       </div>
 
       <div class="island-switch" id="islandSwitch"></div>
