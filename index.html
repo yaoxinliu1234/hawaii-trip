@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Outfit:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=15" />
+  <link rel="stylesheet" href="styles.css?v=16" />
 </head>
 <body class="intro-lock">
   <!-- Intro splash -->
@@ -150,11 +150,18 @@
     </article>
   </dialog>
 
+  <div id="editDock" class="edit-dock is-hidden" hidden>
+    <div class="edit-dock-inner">
+      <span id="editDockStatus">编辑中 · 改动会自动同步</span>
+      <button class="btn btn-primary" type="button" id="saveChangesBtn">保存更改</button>
+    </div>
+  </div>
+
   </div><!-- /#site -->
 
 
-  <script src="cloud.js?v=15"></script>
-  <script src="data.js?v=15"></script>
-  <script src="app.js?v=15"></script>
+  <script src="cloud.js?v=16"></script>
+  <script src="data.js?v=16"></script>
+  <script src="app.js?v=16"></script>
 </body>
 </html>

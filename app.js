@@ -212,6 +212,10 @@ function persist() {
   if (window.TripCloud && !window.TripCloud.isApplyingRemote()) {
     window.TripCloud.queueSave();
   }
+  const status = document.getElementById("editDockStatus");
+  if (status && editMode) {
+    status.textContent = "已保存 · " + new Date().toLocaleTimeString();
+  }
 }
 
 function pushUndo() {
@@ -374,6 +378,28 @@ function updateEditControls() {
   document.getElementById("editBanner")?.classList.toggle("is-editing", editMode);
   const heroEditBtn = document.getElementById("heroEditBtn");
   if (heroEditBtn) heroEditBtn.textContent = editMode ? "✓ 完成编辑" : "✏️ 编辑行程";
+  document.body.classList.toggle("is-editing-trip", editMode);
+  const dock = document.getElementById("editDock");
+  if (dock) {
+    dock.hidden = !editMode;
+    dock.classList.toggle("is-hidden", !editMode);
+  }
+  const status = document.getElementById("editDockStatus");
+  if (status && editMode) status.textContent = "编辑中 · 改动会自动同步";
+}
+
+function saveChangesAndExit() {
+  persist();
+  if (window.TripCloud?.forceUpload) {
+    window.TripCloud.forceUpload();
+  }
+  const status = document.getElementById("editDockStatus");
+  if (status) status.textContent = "已保存 ✓";
+  editMode = false;
+  updateEditControls();
+  renderFlightCard();
+  renderDaySwitch();
+  renderRouteBoard();
 }
 
 function renderIslandCards() {
@@ -1229,15 +1255,19 @@ function importTripFile(file) {
 }
 
 editToggle.addEventListener("click", () => {
-  editMode = !editMode;
+  if (editMode) {
+    saveChangesAndExit();
+    return;
+  }
+  editMode = true;
   updateEditControls();
   renderFlightCard();
   renderDaySwitch();
   renderRouteBoard();
-  if (editMode) {
-    document.getElementById("route").scrollIntoView({ behavior: "smooth", block: "start" });
-  }
+  document.getElementById("route").scrollIntoView({ behavior: "smooth", block: "start" });
 });
+
+document.getElementById("saveChangesBtn")?.addEventListener("click", saveChangesAndExit);
 
 function enterEditFromHero() {
   editMode = true;
