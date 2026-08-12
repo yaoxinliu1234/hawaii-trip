@@ -59,6 +59,7 @@ function normalizeItineraries(source) {
       day: day.day ?? dayIndex + 1,
       date: day.date || "",
       weekday: day.weekday || "",
+      dayTime: day.dayTime || "",
       title: day.title || `Day ${dayIndex + 1}`,
       theme: day.theme || "",
       island: day.island || (islandId === "oahu" ? "oahu" : islandId === "bigIsland" ? "bigIsland" : "bigIsland"),
@@ -389,6 +390,10 @@ function dayLabel(day) {
   return parts.join(" · ");
 }
 
+function dayTimeLabel(day) {
+  return day.dayTime ? day.dayTime : "";
+}
+
 function renderRoadPreview(day, island, map) {
   return day.stops
     .map((stop) => {
@@ -436,6 +441,7 @@ function renderRouteBoardView() {
         <div class="day-ribbon">
           <div class="label">${escapeHtml(dayLabel(day))}</div>
           <h3>${escapeHtml(day.title) || "还没安排"}</h3>
+          ${day.dayTime ? `<div class="day-time">🕐 ${escapeHtml(day.dayTime)}</div>` : ""}
           <div class="theme">${island ? `${island.emoji} ${island.name}` : ""} · 空白行程，自己添加</div>
         </div>
         <div class="empty-day-card">
@@ -514,6 +520,7 @@ function renderRouteBoardView() {
       <div class="day-ribbon">
         <div class="label">${escapeHtml(dayLabel(day))}</div>
         <h3>${escapeHtml(day.title) || "未命名的一天"}</h3>
+        ${day.dayTime ? `<div class="day-time">🕐 ${escapeHtml(day.dayTime)}</div>` : ""}
         <div class="theme">${escapeHtml(day.theme || "")}${island ? ` · ${island.emoji} ${island.name}` : ""}</div>
       </div>
       <div class="timeline">${timeline}</div>
@@ -582,6 +589,9 @@ function renderRouteBoardEdit() {
         <label class="edit-label">日期（如 10/12）
           <input class="edit-input edit-day-date" value="${escapeHtml(day.date || "")}" placeholder="10/12" />
         </label>
+        <label class="edit-label">当天时间（可选）
+          <input class="edit-input edit-day-time" value="${escapeHtml(day.dayTime || "")}" placeholder="例如：航班 14:30 抵达 / 全天自驾" />
+        </label>
         <label class="edit-label">岛屿
           <select class="edit-input edit-day-island">
             <option value="bigIsland" ${dayIslandId(day) === "bigIsland" ? "selected" : ""}>🌋 大岛</option>
@@ -605,6 +615,7 @@ function renderRouteBoardEdit() {
   const titleInput = routeBoard.querySelector(".edit-day-title");
   const themeInput = routeBoard.querySelector(".edit-day-theme");
   const dateInput = routeBoard.querySelector(".edit-day-date");
+  const dayTimeInput = routeBoard.querySelector(".edit-day-time");
   const islandSelect = routeBoard.querySelector(".edit-day-island");
   let dayFocusSnapshot = null;
 
@@ -637,6 +648,9 @@ function renderRouteBoardEdit() {
   });
   bindTextUndo(dateInput, (value) => {
     day.date = value;
+  });
+  bindTextUndo(dayTimeInput, (value) => {
+    day.dayTime = value;
   });
   islandSelect.addEventListener("change", () => {
     pushUndo();
