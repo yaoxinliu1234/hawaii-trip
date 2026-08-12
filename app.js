@@ -3,16 +3,76 @@ let activeIsland = "trip";
 let activeDay = 0;
 let editMode = false;
 
-const STORAGE_KEY = "hawaii-trip-v6-oct13-19";
+const STORAGE_KEY = "hawaii-trip-v7-flight-legs";
 const defaultItineraries = JSON.parse(JSON.stringify(data.itineraries));
-const defaultTripFlights = JSON.parse(JSON.stringify(data.tripFlights || {
-  arrivalAirport: "",
-  arrivalNote: "",
-  departureAirport: "",
-  departureNote: "",
-  interIsland: ""
-}));
-if (!data.tripFlights) data.tripFlights = clone(defaultTripFlights);
+
+function normalizeFlightLeg(leg = {}, index = 0) {
+  return {
+    id: leg.id || `leg-${Date.now()}-${index}`,
+    date: leg.date || "",
+    from: leg.from || "",
+    to: leg.to || "",
+    flightNo: leg.flightNo || "",
+    time: leg.time || "",
+    notes: leg.notes || "",
+    kind: leg.kind || "other"
+  };
+}
+
+function normalizeTripFlights(raw) {
+  if (!raw) return { legs: [] };
+  if (Array.isArray(raw.legs)) {
+    return { legs: raw.legs.map((leg, i) => normalizeFlightLeg(leg, i)) };
+  }
+  // migrate old single-field format
+  const legs = [];
+  if (raw.arrivalAirport || raw.arrivalNote) {
+    legs.push(
+      normalizeFlightLeg(
+        {
+          date: "10/13",
+          from: "",
+          to: raw.arrivalAirport || "",
+          notes: raw.arrivalNote || "抵达",
+          kind: "outbound"
+        },
+        0
+      )
+    );
+  }
+  if (raw.interIsland) {
+    legs.push(
+      normalizeFlightLeg(
+        {
+          date: "",
+          from: "",
+          to: "",
+          notes: raw.interIsland,
+          kind: "island"
+        },
+        legs.length
+      )
+    );
+  }
+  if (raw.departureAirport || raw.departureNote) {
+    legs.push(
+      normalizeFlightLeg(
+        {
+          date: "10/19",
+          from: raw.departureAirport || "",
+          to: "",
+          notes: raw.departureNote || "返程",
+          kind: "return"
+        },
+        legs.length
+      )
+    );
+  }
+  return { legs };
+}
+
+const defaultTripFlights = normalizeTripFlights(data.tripFlights || { legs: [] });
+data.tripFlights = clone(defaultTripFlights);
 const undoStack = [];
 const MAX_UNDO = 40;
 
@@ -128,9 +188,8 @@ function loadSavedItineraries() {
     const saved = JSON.parse(raw);
     if (saved.itineraries) {
       data.itineraries = normalizeItineraries(saved.itineraries);
-      data.tripFlights = { ...clone(defaultTripFlights), ...(saved.tripFlights || {}) };
+      data.tripFlights = normalizeTripFlights(saved.tripFlights || { legs: [] });
     } else {
-      // legacy: only itineraries were stored
       data.itineraries = normalizeItineraries(saved);
       data.tripFlights = clone(defaultTripFlights);
     }
@@ -368,6 +427,13 @@ function renderIslandSwitch() {
 
 function airportLabel(code) {
   const map = {
+    JFK: "纽约 JFK",
+    EWR: "纽约 EWR",
+    LGA: "纽约 LGA",
+    LAX: "洛杉矶 LAX",
+    SFO: "旧金山 SFO",
+    SJC: "圣何塞 SJC",
+    OAK: "奥克兰 OAK",
     KOA: "Kona (KOA)",
     ITO: "Hilo (ITO)",
     HNL: "檀香山 (HNL)",
@@ -375,80 +441,217 @@ function airportLabel(code) {
     LIH: "Lihue / Kauai (LIH)"
   };
   const key = String(code || "").trim().toUpperCase();
-  return map[key] || code || "未填写";
+  return map[key] || code || "—";
+}
+
+function kindLabel(kind) {
+  return (
+    {
+      outbound: "去程",
+      return: "返程",
+      island: "岛间",
+      other: "其他"
+    }[kind] || "其他"
+  );
 }
 
 function renderFlightCard() {
   const card = document.getElementById("flightCard");
   if (!card) return;
-  const f = data.tripFlights;
+  const legs = data.tripFlights.legs || [];
 
   if (editMode) {
+    const rows = legs.length
+      ? legs
+          .map(
+            (leg, index) => `
+        <div class="flight-leg-edit" data-leg="${index}">
+          <div class="flight-leg-top">
+            <span class="flight-leg-num">${index + 1}</span>
+            <select class="edit-input" data-field="kind">
+              <option value="outbound" ${leg.kind === "outbound" ? "selected" : ""}>去程</option>
+              <option value="island" ${leg.kind === "island" ? "selected" : ""}>岛间</option>
+              <option value="return" ${leg.kind === "return" ? "selected" : ""}>返程</option>
+              <option value="other" ${leg.kind === "other" ? "selected" : ""}>其他</option>
+            </select>
+            <button class="edit-icon-btn" type="button" data-action="remove-leg">删</button>
+          </div>
+          <div class="flight-leg-grid">
+            <label class="edit-label">日期
+              <input class="edit-input" data-field="date" value="${escapeHtml(leg.date)}" placeholder="10/13" />
+            </label>
+            <label class="edit-label">时间
+              <input class="edit-input" data-field="time" value="${escapeHtml(leg.time)}" placeholder="14:30 / 转机 2h" />
+            </label>
+            <label class="edit-label">出发
+              <input class="edit-input" data-field="from" list="airportList" value="${escapeHtml(leg.from)}" placeholder="JFK" />
+            </label>
+            <label class="edit-label">到达
+              <input class="edit-input" data-field="to" list="airportList" value="${escapeHtml(leg.to)}" placeholder="LAX" />
+            </label>
+            <label class="edit-label">航班号
+              <input class="edit-input" data-field="flightNo" value="${escapeHtml(leg.flightNo)}" placeholder="UA123" />
+            </label>
+            <label class="edit-label">备注
+              <input class="edit-input" data-field="notes" value="${escapeHtml(leg.notes)}" placeholder="谁坐这班 / 行李直挂" />
+            </label>
+          </div>
+        </div>
+      `
+          )
+          .join("")
+      : `<p class="flight-empty">还没有航班段。可加：JFK → LAX → KOA</p>`;
+
     card.innerHTML = `
       <div class="flight-edit">
-        <div class="flight-edit-title">✈️ 航班 / 机场（整趟行程）</div>
-        <div class="flight-grid">
-          <label class="edit-label">抵达机场
-            <input class="edit-input" data-flight="arrivalAirport" list="airportList" value="${escapeHtml(f.arrivalAirport)}" placeholder="例如：KOA" />
-          </label>
-          <label class="edit-label">抵达备注
-            <input class="edit-input" data-flight="arrivalNote" value="${escapeHtml(f.arrivalNote)}" placeholder="例如：10/13 下午抵达 KOA" />
-          </label>
-          <label class="edit-label">返程机场
-            <input class="edit-input" data-flight="departureAirport" list="airportList" value="${escapeHtml(f.departureAirport)}" placeholder="例如：HNL" />
-          </label>
-          <label class="edit-label">返程备注
-            <input class="edit-input" data-flight="departureNote" value="${escapeHtml(f.departureNote)}" placeholder="例如：10/19 晚上回湾区" />
-          </label>
-          <label class="edit-label flight-span">岛间航班（可选）
-            <input class="edit-input" data-flight="interIsland" value="${escapeHtml(f.interIsland)}" placeholder="例如：10/15 KOA → HNL" />
-          </label>
+        <div class="flight-edit-title">✈️ 航班行程（可多段转机）</div>
+        <div class="flight-legs">${rows}</div>
+        <div class="edit-toolbar">
+          <button class="btn btn-ghost" type="button" id="addFlightLeg">+ 加一段航班</button>
+          <button class="btn btn-ghost" type="button" id="addJfkSample">填入示例 JFK→LAX→KOA</button>
         </div>
         <datalist id="airportList">
+          <option value="JFK">纽约 JFK</option>
+          <option value="EWR">纽约 EWR</option>
+          <option value="LAX">洛杉矶 LAX</option>
+          <option value="SFO">旧金山 SFO</option>
+          <option value="SJC">圣何塞 SJC</option>
+          <option value="OAK">奥克兰 OAK</option>
           <option value="KOA">Kona 大岛</option>
           <option value="ITO">Hilo 大岛</option>
           <option value="HNL">檀香山 欧胡岛</option>
         </datalist>
-        <p class="edit-hint">先大岛再欧胡的话，常见是抵达 KOA/ITO，返程 HNL。</p>
+        <p class="edit-hint">例如去程两段：JFK → LAX，再 LAX → KOA；返程同理可继续加。</p>
       </div>
     `;
 
-    card.querySelectorAll("[data-flight]").forEach((field) => {
-      let snap = null;
-      field.addEventListener("focus", () => {
-        snap = clone(data.tripFlights);
+    card.querySelectorAll(".flight-leg-edit").forEach((row) => {
+      const index = Number(row.dataset.leg);
+
+      row.querySelectorAll("[data-field]").forEach((field) => {
+        let snap = null;
+        field.addEventListener("focus", () => {
+          snap = clone(data.tripFlights);
+        });
+        field.addEventListener("input", () => {
+          data.tripFlights.legs[index][field.dataset.field] = field.value;
+        });
+        field.addEventListener("change", () => {
+          if (field.tagName !== "SELECT") return;
+          if (!snap) snap = clone(data.tripFlights);
+          // snap was taken on focus before change; apply already happened via change after focus
+          data.tripFlights.legs[index][field.dataset.field] = field.value;
+          if (JSON.stringify(snap) !== JSON.stringify(data.tripFlights)) {
+            undoStack.push({
+              itineraries: clone(data.itineraries),
+              tripFlights: snap
+            });
+            if (undoStack.length > MAX_UNDO) undoStack.shift();
+            persist();
+          }
+          snap = null;
+        });
+        field.addEventListener("blur", () => {
+          if (field.tagName === "SELECT") return;
+          if (!snap) return;
+          if (JSON.stringify(snap) !== JSON.stringify(data.tripFlights)) {
+            undoStack.push({
+              itineraries: clone(data.itineraries),
+              tripFlights: snap
+            });
+            if (undoStack.length > MAX_UNDO) undoStack.shift();
+            persist();
+          }
+          snap = null;
+        });
       });
-      field.addEventListener("input", () => {
-        data.tripFlights[field.dataset.flight] = field.value;
+
+      row.querySelector('[data-action="remove-leg"]').addEventListener("click", () => {
+        pushUndo();
+        data.tripFlights.legs.splice(index, 1);
+        persist();
+        renderFlightCard();
       });
-      field.addEventListener("blur", () => {
-        if (!snap) return;
-        if (JSON.stringify(snap) !== JSON.stringify(data.tripFlights)) {
-          undoStack.push({
-            itineraries: clone(data.itineraries),
-            tripFlights: snap
-          });
-          if (undoStack.length > MAX_UNDO) undoStack.shift();
-          persist();
-        }
-        snap = null;
-      });
+    });
+
+    document.getElementById("addFlightLeg")?.addEventListener("click", () => {
+      pushUndo();
+      data.tripFlights.legs.push(
+        normalizeFlightLeg(
+          {
+            date: "",
+            from: "",
+            to: "",
+            kind: data.tripFlights.legs.length ? "other" : "outbound"
+          },
+          data.tripFlights.legs.length
+        )
+      );
+      persist();
+      renderFlightCard();
+    });
+
+    document.getElementById("addJfkSample")?.addEventListener("click", () => {
+      pushUndo();
+      data.tripFlights.legs = [
+        normalizeFlightLeg(
+          {
+            date: "10/13",
+            from: "JFK",
+            to: "LAX",
+            time: "",
+            flightNo: "",
+            notes: "纽约出发，洛杉矶转机",
+            kind: "outbound"
+          },
+          0
+        ),
+        normalizeFlightLeg(
+          {
+            date: "10/13",
+            from: "LAX",
+            to: "KOA",
+            time: "",
+            flightNo: "",
+            notes: "转机后飞大岛",
+            kind: "outbound"
+          },
+          1
+        )
+      ];
+      persist();
+      renderFlightCard();
     });
     return;
   }
 
-  const hasAny = f.arrivalAirport || f.departureAirport || f.interIsland || f.arrivalNote || f.departureNote;
   card.innerHTML = `
     <div class="flight-view">
-      <div class="flight-edit-title">✈️ 航班 / 机场</div>
+      <div class="flight-edit-title">✈️ 航班行程</div>
       ${
-        hasAny
-          ? `<div class="flight-rows">
-              <div class="flight-row"><span>抵达</span><strong>${escapeHtml(airportLabel(f.arrivalAirport))}</strong><em>${escapeHtml(f.arrivalNote || "")}</em></div>
-              <div class="flight-row"><span>返程</span><strong>${escapeHtml(airportLabel(f.departureAirport))}</strong><em>${escapeHtml(f.departureNote || "")}</em></div>
-              ${f.interIsland ? `<div class="flight-row"><span>岛间</span><strong>${escapeHtml(f.interIsland)}</strong><em></em></div>` : ""}
+        legs.length
+          ? `<div class="flight-timeline">
+              ${legs
+                .map(
+                  (leg, index) => `
+                <div class="flight-leg-view">
+                  <div class="flight-leg-badge">${kindLabel(leg.kind)}</div>
+                  <div class="flight-leg-main">
+                    <strong>${escapeHtml(airportLabel(leg.from))} → ${escapeHtml(airportLabel(leg.to))}</strong>
+                    <div class="flight-leg-meta">
+                      ${leg.date ? `<span>${escapeHtml(leg.date)}</span>` : ""}
+                      ${leg.time ? `<span>${escapeHtml(leg.time)}</span>` : ""}
+                      ${leg.flightNo ? `<span>${escapeHtml(leg.flightNo)}</span>` : ""}
+                    </div>
+                    ${leg.notes ? `<em>${escapeHtml(leg.notes)}</em>` : ""}
+                  </div>
+                  ${index < legs.length - 1 ? `<div class="flight-connector">转机</div>` : ""}
+                </div>
+              `
+                )
+                .join("")}
             </div>`
-          : `<p class="flight-empty">还没填机场。点「编辑行程」添加抵达 / 返程机场。</p>`
+          : `<p class="flight-empty">还没加航班。点「编辑行程」可加多段，例如 JFK → LAX → KOA。</p>`
       }
     </div>
   `;

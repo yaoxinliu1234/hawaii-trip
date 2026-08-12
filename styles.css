@@ -1107,30 +1107,84 @@ img { max-width: 100%; display: block; }
   font-weight: 700;
   margin-bottom: 12px;
 }
-.flight-grid {
+.flight-legs {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.flight-leg-edit {
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 12px;
+  background: #f8fcfe;
+}
+.flight-leg-top {
+  display: grid;
+  grid-template-columns: 28px 1fr auto;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.flight-leg-num {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--ocean);
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.flight-leg-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 10px;
 }
-.flight-span { grid-column: 1 / -1; }
-.flight-rows { display: grid; gap: 10px; }
-.flight-row {
+.flight-timeline {
   display: grid;
-  grid-template-columns: 52px 1fr;
-  gap: 4px 12px;
-  align-items: baseline;
+  gap: 8px;
 }
-.flight-row span {
+.flight-leg-view {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+.flight-leg-badge {
+  background: rgba(11, 110, 138, 0.12);
+  color: var(--ocean-deep);
+  border-radius: 999px;
+  padding: 4px 8px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+.flight-leg-main strong {
+  display: block;
+  font-size: 1.02rem;
+}
+.flight-leg-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
   color: var(--muted);
   font-size: 0.85rem;
-  font-weight: 600;
 }
-.flight-row strong { font-size: 1rem; }
-.flight-row em {
-  grid-column: 2;
+.flight-leg-main em {
+  display: block;
+  margin-top: 4px;
   color: var(--muted);
   font-style: normal;
   font-size: 0.88rem;
+}
+.flight-connector {
+  grid-column: 2;
+  color: var(--lava);
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin: -2px 0 2px;
 }
 .flight-empty {
   margin: 0;
@@ -1138,7 +1192,8 @@ img { max-width: 100%; display: block; }
   font-size: 0.95rem;
 }
 @media (max-width: 700px) {
-  .flight-grid { grid-template-columns: 1fr; }
+  .flight-leg-grid { grid-template-columns: 1fr; }
+  .flight-leg-view { grid-template-columns: 56px 1fr; }
 }
 .empty-day-card {
   margin-top: 12px;

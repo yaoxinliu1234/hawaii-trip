@@ -7,11 +7,7 @@ window.HAWAII_DATA = {
     days: 7
   },
   tripFlights: {
-    arrivalAirport: "",
-    arrivalNote: "",
-    departureAirport: "",
-    departureNote: "",
-    interIsland: ""
+    legs: []
   },
   islands: {
     oahu: {
@@ -86,7 +82,8 @@ window.HAWAII_DATA = {
     { category: "行程日期", icon: "📅", items: [
       "Yaoxin 行程：2026年10月13日 – 10月19日（共 7 天 / 6 晚）",
       "先大岛 10/13–10/15，再欧胡岛 10/16–10/19（可自行调整）",
-      "航班机场填在「手账路线图」顶部：抵达机场 / 返程机场 / 岛间航班",
+      "航班可多段添加，例如：JFK → LAX → KOA，再 KOA → HNL",
+      "航班机场填在「手账路线图」顶部，点编辑后 + 加一段航班",
       "行程空白，请自己添加每一站的时间、Notes 和图片"
     ]},
     { category: "从纽约/湾区出发", icon: "✈️", items: [
