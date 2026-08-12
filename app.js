@@ -1,12 +1,18 @@
 const data = window.HAWAII_DATA;
-let activeIsland = "oahu";
+let activeIsland = "trip";
 let activeDay = 0;
 let editMode = false;
 
-const STORAGE_KEY = "hawaii-itineraries-v2";
+const STORAGE_KEY = "hawaii-itineraries-v3-oct2026";
 const defaultItineraries = JSON.parse(JSON.stringify(data.itineraries));
 const undoStack = [];
 const MAX_UNDO = 40;
+
+const ROUTE_TABS = [
+  { id: "trip", name: "完整 8 日", emoji: "🌺", color: "#0B6E8A" },
+  { id: "oahu", name: "欧胡岛", emoji: "🏄", color: "#0B6E8A" },
+  { id: "bigIsland", name: "大岛", emoji: "🌋", color: "#C1440E" }
+];
 
 const islandCards = document.getElementById("islandCards");
 const islandSwitch = document.getElementById("islandSwitch");
@@ -51,12 +57,55 @@ function normalizeItineraries(source) {
   Object.keys(next).forEach((islandId) => {
     next[islandId].days = (next[islandId].days || []).map((day, dayIndex) => ({
       day: day.day ?? dayIndex + 1,
+      date: day.date || "",
+      weekday: day.weekday || "",
       title: day.title || `Day ${dayIndex + 1}`,
       theme: day.theme || "",
+      island: day.island || (islandId === "trip" ? "oahu" : islandId),
       stops: (day.stops || []).map((stop, stopIndex) => normalizeStop(stop, stopIndex))
     }));
   });
   return next;
+}
+
+function dayIslandId(day) {
+  if (day?.island && data.islands[day.island]) return day.island;
+  if (activeIsland === "trip") return "oahu";
+  return activeIsland === "bigIsland" ? "bigIsland" : "oahu";
+}
+
+function attractionMapForDay(day) {
+  if (activeIsland === "trip") {
+    const map = {};
+    Object.values(data.islands).forEach((island) => {
+      island.attractions.forEach((a) => {
+        map[a.id] = { ...a, _island: island.id };
+      });
+    });
+    return map;
+  }
+  const islandId = dayIslandId(day);
+  const map = {};
+  data.islands[islandId].attractions.forEach((a) => {
+    map[a.id] = { ...a, _island: islandId };
+  });
+  return map;
+}
+
+function attractionOptions(selectedId, day) {
+  const islandId = dayIslandId(day);
+  const blank = `<option value="">无关联景点（纯文字 / 自定义图）</option>`;
+  const list =
+    activeIsland === "trip"
+      ? Object.values(data.islands).flatMap((island) => island.attractions)
+      : data.islands[islandId].attractions;
+  const options = list
+    .map(
+      (a) =>
+        `<option value="${a.id}" ${a.id === selectedId ? "selected" : ""}>${a.emoji} ${escapeHtml(a.name)}</option>`
+    )
+    .join("");
+  return blank + options;
 }
 
 function loadSavedItineraries() {
@@ -225,17 +274,6 @@ function attractionMap(islandId) {
   return map;
 }
 
-function attractionOptions(selectedId) {
-  const blank = `<option value="">无关联景点（纯文字 / 自定义图）</option>`;
-  const options = data.islands[activeIsland].attractions
-    .map(
-      (a) =>
-        `<option value="${a.id}" ${a.id === selectedId ? "selected" : ""}>${a.emoji} ${escapeHtml(a.name)}</option>`
-    )
-    .join("");
-  return blank + options;
-}
-
 function updateEditControls() {
   editToggle.textContent = editMode ? "✓ 完成编辑" : "✏️ 编辑行程";
   resetItinerary.classList.toggle("is-hidden", !editMode);
@@ -280,15 +318,13 @@ function renderIslandCards() {
 }
 
 function renderIslandSwitch() {
-  islandSwitch.innerHTML = Object.values(data.islands)
-    .map(
-      (island) => `
-      <button class="chip ${island.id} ${activeIsland === island.id ? "active" : ""}" data-island="${island.id}">
-        ${island.emoji} ${island.name}
+  islandSwitch.innerHTML = ROUTE_TABS.map(
+    (tab) => `
+      <button class="chip ${tab.id} ${activeIsland === tab.id ? "active" : ""}" data-island="${tab.id}" style="${activeIsland === tab.id ? `background:${tab.color};border-color:${tab.color};color:#fff` : ""}">
+        ${tab.emoji} ${tab.name}
       </button>
     `
-    )
-    .join("");
+  ).join("");
 
   islandSwitch.querySelectorAll(".chip").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -306,7 +342,7 @@ function renderDaySwitch() {
       .map(
         (day, index) => `
       <button class="chip ${activeDay === index ? "active" : ""}" data-day="${index}">
-        Day ${day.day}
+        ${day.date ? `${day.date}` : `Day ${day.day}`}
       </button>
     `
       )
@@ -339,6 +375,18 @@ function renderDaySwitch() {
       renderRouteBoard();
     });
   }
+}
+
+function routeAccentColor(day) {
+  const islandId = dayIslandId(day);
+  return data.islands[islandId]?.color || "#0B6E8A";
+}
+
+function dayLabel(day) {
+  const parts = [`Day ${day.day}`];
+  if (day.date) parts.push(day.date);
+  if (day.weekday) parts.push(day.weekday);
+  return parts.join(" · ");
 }
 
 function renderRoadPreview(day, island, map) {
@@ -377,15 +425,16 @@ function renderRoadPreview(day, island, map) {
 }
 
 function renderRouteBoardView() {
-  const island = data.islands[activeIsland];
   const day = currentDay();
-  const map = attractionMap(activeIsland);
+  const island = data.islands[dayIslandId(day)];
+  const map = attractionMapForDay(day);
+  const color = routeAccentColor(day);
 
   const timeline = day.stops
     .map(
       (stop) => `
       <div class="tl-item">
-        <div class="tl-num" style="background:${island.color}">${stop.num}</div>
+        <div class="tl-num" style="background:${color}">${stop.num}</div>
         <div>
           <div class="tl-time">${escapeHtml(stop.time)}</div>
           <div class="tl-text">${escapeHtml(stop.content)}</div>
@@ -412,10 +461,10 @@ function renderRouteBoardView() {
               </div>`;
         return `
           <div class="road-stop">
-            <div class="road-node" style="border-color:${island.color}">${stop.num}</div>
+            <div class="road-node" style="border-color:${color}">${stop.num}</div>
             ${
               attr
-                ? `<button class="photo-card custom" data-attraction="${attr.id}" type="button">${body}</button>`
+                ? `<button class="photo-card custom" data-attraction="${attr.id}" data-island="${attr._island || dayIslandId(day)}" type="button">${body}</button>`
                 : `<div class="photo-card custom">${body}</div>`
             }
           </div>
@@ -423,7 +472,7 @@ function renderRouteBoardView() {
       }
       return `
         <div class="road-stop">
-          <div class="road-node" style="border-color:${island.color}">${stop.num}</div>
+          <div class="road-node" style="border-color:${color}">${stop.num}</div>
           <div class="text-node">
             <span>${escapeHtml(stop.time)}</span>
             <p>${escapeHtml(stop.content)}</p>
@@ -437,9 +486,9 @@ function renderRouteBoardView() {
   routeBoard.innerHTML = `
     <div>
       <div class="day-ribbon">
-        <div class="label">Day ${day.day}</div>
+        <div class="label">${escapeHtml(dayLabel(day))}</div>
         <h3>${escapeHtml(day.title)}</h3>
-        <div class="theme">${escapeHtml(day.theme || "")}</div>
+        <div class="theme">${escapeHtml(day.theme || "")}${island ? ` · ${island.emoji} ${island.name}` : ""}</div>
       </div>
       <div class="timeline">${timeline}</div>
     </div>
@@ -447,15 +496,19 @@ function renderRouteBoardView() {
   `;
 
   routeBoard.querySelectorAll(".photo-card[data-attraction]").forEach((card) => {
-    card.addEventListener("click", () => openAttraction(activeIsland, card.dataset.attraction));
+    card.addEventListener("click", () => {
+      const islandId = card.dataset.island || dayIslandId(day);
+      openAttraction(islandId, card.dataset.attraction);
+    });
   });
 }
 
 function renderRouteBoardEdit() {
-  const island = data.islands[activeIsland];
-  const itinerary = currentItinerary();
   const day = currentDay();
-  const map = attractionMap(activeIsland);
+  const island = data.islands[dayIslandId(day)];
+  const itinerary = currentItinerary();
+  const map = attractionMapForDay(day);
+  const color = routeAccentColor(day);
 
   const stopEditors = day.stops
     .map((stop, index) => {
@@ -463,7 +516,7 @@ function renderRouteBoardEdit() {
       return `
       <div class="edit-stop" data-stop="${index}">
         <div class="edit-stop-top">
-          <span class="edit-num" style="background:${island.color}">${stop.num}</span>
+          <span class="edit-num" style="background:${color}">${stop.num}</span>
           <input class="edit-input" data-field="time" value="${escapeHtml(stop.time)}" placeholder="时间，如 上午 / 14:00" />
           <button class="edit-icon-btn" type="button" data-action="remove-stop">删</button>
         </div>
@@ -475,7 +528,7 @@ function renderRouteBoardEdit() {
         </label>
         <label class="edit-label">关联景点（可选）
           <select class="edit-input" data-field="attractionId">
-            ${attractionOptions(stop.attractionId)}
+            ${attractionOptions(stop.attractionId, day)}
           </select>
         </label>
         <div class="edit-photo-row">
@@ -496,9 +549,12 @@ function renderRouteBoardEdit() {
   routeBoard.innerHTML = `
     <div class="edit-panel">
       <div class="day-ribbon edit-ribbon">
-        <div class="label">Day ${day.day} · 编辑中</div>
+        <div class="label">${escapeHtml(dayLabel(day))} · 编辑中</div>
         <label class="edit-label">当天标题
           <input class="edit-input edit-day-title" value="${escapeHtml(day.title)}" placeholder="例如：抵达 · 威基基" />
+        </label>
+        <label class="edit-label">日期（如 10/12）
+          <input class="edit-input edit-day-date" value="${escapeHtml(day.date || "")}" placeholder="10/12" />
         </label>
         <label class="edit-label">主题
           <input class="edit-input edit-day-theme" value="${escapeHtml(day.theme || "")}" placeholder="例如：Waikiki" />
@@ -516,6 +572,7 @@ function renderRouteBoardEdit() {
 
   const titleInput = routeBoard.querySelector(".edit-day-title");
   const themeInput = routeBoard.querySelector(".edit-day-theme");
+  const dateInput = routeBoard.querySelector(".edit-day-date");
   let dayFocusSnapshot = null;
 
   const bindTextUndo = (el, apply) => {
@@ -526,6 +583,7 @@ function renderRouteBoardEdit() {
       apply(el.value);
       const preview = routeBoard.querySelector(".edit-preview");
       if (preview) preview.innerHTML = renderRoadPreview(day, island, map);
+      renderDaySwitch();
     });
     el.addEventListener("blur", () => {
       if (!dayFocusSnapshot) return;
@@ -543,6 +601,9 @@ function renderRouteBoardEdit() {
   });
   bindTextUndo(themeInput, (value) => {
     day.theme = value;
+  });
+  bindTextUndo(dateInput, (value) => {
+    day.date = value;
   });
 
   routeBoard.querySelectorAll(".edit-stop").forEach((row) => {
@@ -638,12 +699,22 @@ function renderRouteBoard() {
 }
 
 function renderSpots() {
-  const island = data.islands[activeIsland];
-  spotsSubtitle.textContent = `${island.name} · 点击任意卡片查看详情`;
-  spotsGrid.innerHTML = island.attractions
+  const list =
+    activeIsland === "trip"
+      ? Object.values(data.islands).flatMap((island) =>
+          island.attractions.map((a) => ({ ...a, _island: island.id }))
+        )
+      : data.islands[activeIsland].attractions.map((a) => ({ ...a, _island: activeIsland }));
+
+  spotsSubtitle.textContent =
+    activeIsland === "trip"
+      ? "双岛全部景点 · 点击查看详情"
+      : `${data.islands[activeIsland].name} · 点击任意卡片查看详情`;
+
+  spotsGrid.innerHTML = list
     .map(
       (a) => `
-      <article class="spot-card" data-attraction="${a.id}">
+      <article class="spot-card" data-attraction="${a.id}" data-island="${a._island}">
         <img src="images/${a.id}.jpg" alt="${a.name}" loading="lazy" />
         <div class="body">
           <h3>${a.emoji} ${a.name}</h3>
@@ -655,7 +726,7 @@ function renderSpots() {
     .join("");
 
   spotsGrid.querySelectorAll(".spot-card").forEach((card) => {
-    card.addEventListener("click", () => openAttraction(activeIsland, card.dataset.attraction));
+    card.addEventListener("click", () => openAttraction(card.dataset.island, card.dataset.attraction));
   });
 }
 
@@ -673,8 +744,18 @@ function renderTips() {
 }
 
 function openAttraction(islandId, attractionId) {
-  const island = data.islands[islandId];
-  const a = island.attractions.find((x) => x.id === attractionId);
+  let island = data.islands[islandId];
+  let a = island?.attractions.find((x) => x.id === attractionId);
+  if (!a) {
+    for (const item of Object.values(data.islands)) {
+      const found = item.attractions.find((x) => x.id === attractionId);
+      if (found) {
+        island = item;
+        a = found;
+        break;
+      }
+    }
+  }
   if (!a) return;
 
   modalBody.innerHTML = `
